@@ -1,288 +1,235 @@
-## 1.0 Understanding KPIs ("Golden Signals")
-Organizations utilize key performance indicators (KPIs) a.k.a 'Golden Signals' that provide insight into the health or risk of the business and operations. Different parts of an organization would have unique KPIs that cater to measurement of their respective outcomes. For example, the product team of an eCommerce application would track the ability to process cart orders successfully as its KPI. An on-call operations team would measure their KPI as mean-time to detect (MTTD) an incident. For the financial team a KPI for cost of resources under budget is important. 
+# 关键绩效指标 (KPIs) 指南
 
-Service Level Indicators (SLIs), Service Level Objectives (SLOs), and Service Level Agreements (SLAs) are essential components of service reliability management. This guide outlines best practices for using Amazon CloudWatch and its features to calculate and monitor SLIs, SLOs, and SLAs, with clear and concise examples.
+## 1.0 理解 KPIs（“黄金信号”）
 
-- **SLI (Service Level Indicator):** A quantitative measure of a service's performance.
-- **SLO (Service Level Objective):** The target value for an SLI, representing the desired performance level.
-- **SLA (Service Level Agreement):** A contract between a service provider and its users specifying the expected level of service.
+组织利用关键绩效指标（KPIs），也称为“黄金信号”，来洞察业务和运营的健康状况或风险。组织的不同部分会有独特的 KPIs，用于衡量其各自的成果。例如，电子商务应用程序的产品团队会跟踪成功处理购物车订单的能力作为其 KPI。值班运营团队会将其 KPI 衡量为平均检测时间（MTTD）。对于财务团队，预算内资源成本的 KPI 非常重要。
 
-Examples of common SLIs:
+服务级别指标（SLIs）、服务级别目标（SLOs）和服务级别协议（SLAs）是服务可靠性管理的重要组成部分。本指南概述了使用 Amazon CloudWatch 及其功能来计算和监控 SLIs、SLOs 和 SLAs 的最佳实践，并提供清晰简洁的示例。
 
-- Availability: Percentage of time a service is operational
-- Latency: Time taken to fulfill a request
-- Error rate: Percentage of failed requests
+- **SLI（服务级别指标）**：服务性能的定量衡量标准。
+- **SLO（服务级别目标）**：SLI 的目标值，表示期望的性能水平。
+- **SLA（服务级别协议）**：服务提供商与其用户之间的合同，规定了预期的服务水平。
 
-## 2.0 Discover customer and stakeholder requirements (using template as suggested below)
+常见的 SLI 示例：
 
-1. Start with the top question: “What is the business value or business problem in scope for the given workload (ex. Payment portal, eCommerce order placement, User registration, Data reports, Support portal etc)
-2. Break down the business value into categories such as User-Experience (UX); Business-Experience (BX); Operational-Experience (OpsX); Security-Experience(SecX); Developer-Experience (DevX)
-3. Derive core signals aka “Golden Signals” for each category; the top signals around UX & BX will typically construe the business metrics
+- **可用性**：服务正常运行的时间百分比
+- **延迟**：完成请求所需的时间
+- **错误率**：失败请求的百分比
 
-| ID	| Initials	| Customer	| Business Needs	| Measurements	| Information Sources	| What does good look like?	| Alerts	| Dashboards	| Reports	|
-| ---	| ---	| ---	| ---	| ---	| ---	| ---	| ---	| ---	| --- |		
-|M1	|Example	|External End User	|User Experience	|Response time (Page latency)	|Logs / Traces	|< 5s for 99.9%	|No	|Yes	|No	|
-|M2	|Example	|Business	|Availability	|Successful RPS (Requests per second)	|Health Check	|>85% in 5 min window	|Yes	|Yes	|Yes	|
-|M3	|Example	|Security	|Compliance	|Critical non-compliant resources	|Config data	|\<10 under 15 days	|No	|Yes	|Yes	|
-|M4	|Example	|Developers	|Agility	|Deployment time	|Deployment logs	|Always < 10 min	|Yes	|No	|Yes	|
-|M5	|Example	|Operators	|Capacity	|Queue Depth	|App logs/metrics	|Always < 10	|Yes	|Yes	|Yes	|
+## 2.0 发现客户和利益相关者的需求（使用以下建议的模板）
 
-### 2.1 Golden Signals
+1. 从顶层问题开始：“给定工作负载的业务价值或业务问题是什么？”（例如支付门户、电子商务订单处理、用户注册、数据报告、支持门户等）。
+2. 将业务价值分解为以下类别：用户体验（UX）、业务体验（BX）、运营体验（OpsX）、安全体验（SecX）、开发者体验（DevX）。
+3. 为每个类别导出核心信号，即“黄金信号”；围绕 UX 和 BX 的顶级信号通常构成业务指标。
 
-|Category	|Signal	|Notes	|References	|
-|---	|---	|---	|---	|
-|UX	|Performance (Latency)	|See M1 in template	|Whitepaper: [Availability and Beyond (Measuring latency)](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/measuring-availability.html#latency)	|
-|BX	|Availability	|See M2 in template	|Whitepaper: [Avaiability and Beyond (Measuring availability)](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/measuring-availability.html)	|
-|BX	|Business Continuity Plan (BCP)	|Amazon Resilience Hub (ARH) resilience score against defined RTO/RPO	|Docs: [ARH user guide (Understanding resilience scores)](https://docs.aws.amazon.com/resilience-hub/latest/userguide/resil-score.html)	|
-|SecX	|(Non)-Compliance	|See M3 in template	|Docs: [AWS Control Tower user guide (Compliance status in the console)](https://docs.aws.amazon.com/controltower/latest/userguide/compliance-statuses.html)	|
-|DevX	|Agility	|See M4 in template	|Docs: [DevOps Monitoring Dashboard on AWS (DevOps metrics list)](https://docs.aws.amazon.com/solutions/latest/devops-monitoring-dashboard-on-aws/devops-metrics-list.html)	|
-|OpsX	|Capacity (Quotas)	|See M5 in template	|Docs: [Amazon CloudWatch user guide (Visualizing your service quotas and setting alarms)](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Quotas-Visualize-Alarms.html)	|
-|OpsX	|Budget Anomalies	|	|Docs:<br/> 1. [AWS Billing and Cost Management (AWS Cost Anomaly Detection)](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html) <br/> 2. [AWS Budgets](https://aws.amazon.com/aws-cost-management/aws-budgets/)	|
+| ID  | 缩写  | 客户  | 业务需求  | 衡量标准  | 信息来源  | 什么是好的表现？  | 告警  | 仪表板  | 报告  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| M1  | 示例  | 外部终端用户  | 用户体验  | 响应时间（页面延迟）  | 日志/跟踪  | < 5 秒（99.9%）  | 否  | 是  | 否  |
+| M2  | 示例  | 业务  | 可用性  | 成功的 RPS（每秒请求数）  | 健康检查  | >85%（5 分钟窗口）  | 是  | 是  | 是  |
+| M3  | 示例  | 安全  | 合规性  | 关键不合规资源  | 配置数据  | <10（15 天内）  | 否  | 是  | 是  |
+| M4  | 示例  | 开发者  | 敏捷性  | 部署时间  | 部署日志  | 始终 < 10 分钟  | 是  | 否  | 是  |
+| M5  | 示例  | 操作员  | 容量  | 队列深度  | 应用程序日志/指标  | 始终 < 10  | 是  | 是  | 是  |
 
+### 2.1 黄金信号
 
+| 类别  | 信号  | 备注  | 参考  |
+| --- | --- | --- | --- |
+| UX  | 性能（延迟）  | 参见模板中的 M1  | 白皮书：[可用性及超越（测量延迟）](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/measuring-availability.html#latency)  |
+| BX  | 可用性  | 参见模板中的 M2  | 白皮书：[可用性及超越（测量可用性）](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/measuring-availability.html)  |
+| BX  | 业务连续性计划（BCP）  | Amazon Resilience Hub (ARH) 弹性分数与定义的 RTO/RPO  | 文档：[ARH 用户指南（理解弹性分数）](https://docs.aws.amazon.com/resilience-hub/latest/userguide/resil-score.html)  |
+| SecX  | （非）合规性  | 参见模板中的 M3  | 文档：[AWS Control Tower 用户指南（控制台中的合规状态）](https://docs.aws.amazon.com/controltower/latest/userguide/compliance-statuses.html)  |
+| DevX  | 敏捷性  | 参见模板中的 M4  | 文档：[AWS 上的 DevOps 监控仪表板（DevOps 指标列表）](https://docs.aws.amazon.com/solutions/latest/devops-monitoring-dashboard-on-aws/devops-metrics-list.html)  |
+| OpsX  | 容量（配额）  | 参见模板中的 M5  | 文档：[Amazon CloudWatch 用户指南（可视化服务配额并设置告警）](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Quotas-Visualize-Alarms.html)  |
+| OpsX  | 预算异常  |  | 文档：<br/> 1. [AWS 计费和成本管理（AWS 成本异常检测）](https://docs.aws.amazon.com/cost-management/latest/userguide/getting-started-ad.html) <br/> 2. [AWS 预算](https://aws.amazon.com/aws-cost-management/aws-budgets/)  |
 
-## 3.0 Top Level Guidance ‘TLG’
+## 3.0 顶层指导（TLG）
 
+### 3.1 通用 TLG
 
-### 3.1 TLG General
+1. 与业务、架构和安全团队合作，帮助完善业务、合规性和治理需求，并确保它们准确反映业务需求。这包括[建立恢复时间和恢复点目标](https://aws.amazon.com/blogs/mt/establishing-rpo-and-rto-targets-for-cloud-applications/)（RTOs、RPOs）。制定衡量需求的方法，例如[测量可用性](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/measuring-availability.html)和延迟（例如，正常运行时间可以允许在 5 分钟窗口内出现少量故障）。
+2. 构建有效的[标记策略](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/defining-and-publishing-a-tagging-schema.html)，使用与各种业务功能成果相一致的模式。这应特别涵盖[操作可观测性](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/operational-observability.html)和[事件管理](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/incident-management.html)。
+3. 尽可能利用动态阈值进行告警（特别是对于没有基线 KPI 的指标），使用 [CloudWatch 异常检测](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html)，它提供了机器学习算法来建立基线。当使用发布 CloudWatch 指标的 AWS 服务（或其他来源，如 Prometheus 指标）配置告警时，考虑创建[复合告警](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html)以减少告警噪音。例如，一个包含业务指标（由成功请求跟踪的可用性）和延迟的复合告警，当在部署期间两者都低于关键阈值时触发告警，可能是部署错误的确定性指标。
+4. （注意：需要 AWS 商业支持或更高级别）AWS 使用 AWS Health 服务发布与您的资源相关的事件。利用 [AWS Health Aware (AHA)](https://aws.amazon.com/blogs/mt/aws-health-aware-customize-aws-health-alerts-for-organizational-and-personal-aws-accounts/) 框架（使用 AWS Health）从中央账户（如管理账户）中摄取跨 AWS 组织的主动和实时告警。这些告警可以发送到首选的通信平台，如 Slack，并与 ITSM 工具（如 ServiceNow 和 Jira）集成。
+5. 利用 Amazon CloudWatch [Application Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch-application-insights.html) 为资源设置最佳监控器，并持续分析数据以发现应用程序问题的迹象。它还提供自动化的仪表板，显示受监控应用程序的潜在问题，以便快速隔离/排除应用程序/基础设施问题。利用 [Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html) 聚合来自容器的指标和日志，并可以与 CloudWatch Application Insights 无缝集成。
+6. 利用 [AWS Resilience Hub](https://aws.amazon.com/resilience-hub/) 分析应用程序是否符合定义的 RTO 和 RPO。通过使用 [AWS Fault Injection Simulator](https://aws.amazon.com/fis/) 等工具进行受控实验，验证可用性、延迟和业务连续性需求是否得到满足。进行额外的 Well-Architected 审查和服务特定的深入分析，以确保工作负载设计符合业务需求并遵循 AWS 最佳实践。
+7. 有关更多详细信息，请参阅 [AWS 可观测性最佳实践](https://aws-observability.github.io/observability-best-practices/) 指南的其他部分、AWS 云采用框架：[操作视角](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-operations-perspective/observability.html) 白皮书以及 AWS Well-Architected 框架操作卓越支柱白皮书中的“[理解工作负载健康](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/understanding-workload-health.html)”内容。
 
-1. Work with business, architecture and security teams to help refine the business, compliance and governance requirements and ensure they accurately reflect the business needs. This includes [establishing recovery-time and recovery-point targets](https://aws.amazon.com/blogs/mt/establishing-rpo-and-rto-targets-for-cloud-applications/) (RTOs, RPOs). Formulate methods to measure requirements such as [measuring availability](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/measuring-availability.html) and latency (ex. Uptime could allow a small percentage of faults over a 5 min window).
+### 3.2 按领域的 TLG（强调业务指标，即 UX、BX）
 
-2. Build an effective [tagging strategy](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/defining-and-publishing-a-tagging-schema.html) with purpose built schema that aligns to various business functional outcomes. This should especially cover [operational observability](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/operational-observability.html) and [incident management](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/incident-management.html).
+以下是使用 CloudWatch (CW) 等服务的合适示例（参考：发布 [CloudWatch 指标文档](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html) 的 AWS 服务）
 
-3. Where possible leverage dynamic thresholds for alarms (esp. for metrics that do not have baseline KPIs) using [CloudWatch anomaly detection](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html) which provides machine learning algorithms to establish the baselines. When utilizing  AWS available services that publish CW metrics (or other sources like prometheus metrics) to configure alarms consider creating [composite alarms](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html) to reduce alarm noise. Example: a composite alarm that comprises of a business metric indicative of availability (tracked by successful requests) and latency when configured to alarm when both drop below a critical threshold during deployments could be deterministic indicator of deployment bug.
+#### 3.2.1 Canaries（即合成事务）和真实用户监控（RUM）
 
-4. (NOTE: Requires AWS Business support or higher) AWS publishes events of interest using AWS Health service related to your resources in Personal Health Dashboard. Leverage [AWS Health Aware (AHA)](https://aws.amazon.com/blogs/mt/aws-health-aware-customize-aws-health-alerts-for-organizational-and-personal-aws-accounts/) framework (that uses AWS Health) to ingest proactive and real-time alerts aggregated across your AWS Organization from a central account (such as a management account). These alerts can be sent to preferred communication platforms such as Slack and integrates with ITSM tools like ServiceNow and Jira.
-![Image: AWS Health Aware 'AHA'](../../../images/AHA-Integration.jpg)
+* TLG：了解客户/用户体验的最简单和最有效的方法之一是使用 Canaries（合成事务）模拟客户流量，定期探测您的服务并记录指标。
 
-5. Leverage Amazon CloudWatch [Application Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch-application-insights.html) to setup best monitors for resources and continuously analyze data for signs of problems with your applications. It also provides automated dashboards that show potential problems with monitored applications to quickly isolate/troubleshoot application/infrastructure issues. Leverage [Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html) to aggregate metrics and logs from containers and can be integrated seamlessly with CloudWatch Application Insights.
-![Image: CW Application Insights](../../../images/CW-ApplicationInsights.jpg)
+| AWS 服务  | 功能  | 衡量标准  | 指标  | 示例  | 备注  |
+| --- | --- | --- | --- | --- | --- |
+| CW  | 合成事务  | 可用性  | **SuccessPercent**  | (例如 SuccessPercent > 90 或 CW 异常检测 1 分钟周期)<br/>**[如果 Canaries 在每个工作日 7a-8a 运行（CloudWatchSynthetics）：** <br/>`IF(((DAY(m1)<6) AND (HOUR(m1)>7 AND HOUR(m1)<8)),m1)]`  |  |
+| CW  | 合成事务  | 可用性  | VisualMonitoringSuccessPercent  | (例如 VisualMonitoringSuccessPercent > 90 用于 5 分钟周期的 UI 截图比较)<br/>**[如果 Canaries 在每个工作日 7a-8a 运行（CloudWatchSynthetics）：** <br/>`IF(((DAY(m1)<6) AND (HOUR(m1)>7 AND HOUR(m1)<8)),m1)`  | 如果客户期望 Canary 匹配预定的 UI 截图  |
+| CW  | RUM  | 响应时间  | Apdex 分数  | (例如 Apdex 分数：<br/> NavigationFrustratedCount < ‘N’ 预期值)  |  |
 
-6. Leverage [AWS Resilience Hub](https://aws.amazon.com/resilience-hub/) to analyze applications against defined RTOs and RPOs. Validate if the availability, latency and business continuity requirements are met by using controlled experiments using tools like [AWS Fault Injection Simulator](https://aws.amazon.com/fis/). Conduct additional Well-Architected reviews and service specific deep-dives to ensure workloads are designed to meet business requirements following AWS best practices.
+#### 3.2.2 API 前端
 
-7. For further details refer to other sections of [AWS Observability Best Practices](https://aws-observability.github.io/observability-best-practices/) guidance, AWS Cloud Adoption Framework: [Operations Perspective](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-operations-perspective/observability.html) whitepaper and AWS Well-Architected Framework Operational Excellence Pillar whitepaper content on '[Understading workload health](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/understanding-workload-health.html)'.
-    
+| AWS 服务  | 功能  | 衡量标准  | 指标  | 示例  | 备注  |
+| --- | --- | --- | --- | --- | --- |
+| CloudFront  |  | 可用性  | 总错误率  | (例如 [总错误率] < 10 或 CW 异常检测 1 分钟周期)  | 可用性作为错误率的衡量标准  |
+| CloudFront  | （需要开启额外指标）  | 性能  | 缓存命中率  | (例如 缓存命中率 < 10 CW 异常检测 1 分钟周期)  |  |
+| Route53  | 健康检查  | （跨区域）可用性  | HealthCheckPercentageHealthy  | (例如 [HealthCheckPercentageHealthy 的最小值] > 90 或 CW 异常检测 1 分钟周期)  |  |
+| Route53  | 健康检查  | 延迟  | TimeToFirstByte  | (例如 [p99 TimeToFirstByte] < 100 毫秒或 CW 异常检测 1 分钟周期)  |  |
+| API Gateway  |  | 可用性  | Count  | (例如 [(4XXError + 5XXError) / Count) * 100] < 10 或 CW 异常检测 1 分钟周期)  | 可用性作为“放弃”请求的衡量标准  |
+| API Gateway  |  | 延迟  | 延迟（或 IntegrationLatency，即后端延迟）  | (例如 p99 延迟 < 1 秒或 CW 异常检测 1 分钟周期)  | p99 比 p90 等较低百分位具有更大的容忍度（p50 与平均值相同）  |
+| API Gateway  |  | 性能  | CacheHitCount（和未命中）  | (例如 [CacheMissCount / (CacheHitCount + CacheMissCount)  * 100] < 10 或 CW 异常检测 1 分钟周期)  | 性能作为缓存（未命中）的衡量标准  |
+| Application Load Balancer (ALB)  |  | 可用性  | RejectedConnectionCount  | (例如 [RejectedConnectionCount/(RejectedConnectionCount + RequestCount) * 100] < 10 CW 异常检测 1 分钟周期)  | 可用性作为由于最大连接数达到限制而被拒绝的请求的衡量标准  |
+| Application Load Balancer (ALB)  |  | 延迟  | TargetResponseTime  | (例如 p99 TargetResponseTime < 1 秒或 CW 异常检测 1 分钟周期)  | p99 比 p90 等较低百分位具有更大的容忍度（p50 与平均值相同）  |
 
-### 3.2 TLG by Domain (emphasis on business metrics i.e. UX, BX)
+#### 3.2.3 无服务器
 
-Suitable examples are provided below using services such as CloudWatch (CW) (Ref: AWS Services that publish [CloudWatch metrics documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html))
+| AWS 服务  | 功能  | 衡量标准  | 指标  | 示例  | 备注  |
+| --- | --- | --- | --- | --- | --- |
+| S3  | 请求指标  | 可用性  | AllRequests  | (例如 [(4XXErrors + 5XXErrors) / AllRequests) * 100] < 10 或 CW 异常检测 1 分钟周期)  | 可用性作为“放弃”请求的衡量标准  |
+| S3  | 请求指标  | （总体）延迟  | TotalRequestLatency  | (例如 [p99 TotalRequestLatency] < 100 毫秒或 CW 异常检测 1 分钟周期)  |  |
+| DynamoDB (DDB)  |  | 可用性  | ThrottledRequests  | (例如 [ThrottledRequests] < 100 或 CW 异常检测 1 分钟周期)  | 可用性作为“限制”请求的衡量标准  |
+| DynamoDB (DDB)  |  | 延迟  | SuccessfulRequestLatency  | (例如 [p99 SuccessfulRequestLatency] < 100 毫秒或 CW 异常检测 1 分钟周期)  |  |
+| Step Functions  |  | 可用性  | ExecutionsFailed  | (例如 ExecutionsFailed = 0)<br/>**[例如 如果 Step Function 执行在 UTC 时间每个工作日 9p-7a 运行：** <br/>`IF(((DAY(m1)<6 OR ** ** DAY(m1)==7) AND (HOUR(m1)>21 AND HOUR(m1)<7)),m1)]`  | 假设业务流要求在工作日 9p-7a（每日业务操作开始）完成 Step Functions  |
 
-#### 3.2.1 Canaries (aka Synthetic transactions) and Real-User Monitoring (RUM)
+#### 3.2.4 计算和容器
 
-* TLG: One of the easiest and most effective ways to understand client/customer experience is to simulate customer traffic with Canaries (Synthetic transactions) which regularly probes your services and records metrics.
+| AWS 服务  | 功能  | 衡量标准  | 指标  | 示例  | 备注  |
+| --- | --- | --- | --- | --- | --- |
+| EKS  | Prometheus 指标  | 可用性  | APIServer 请求成功率  | (例如 Prometheus 指标如 [APIServer 请求成功率](https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/service/cwagent-prometheus/sample_cloudwatch_dashboards/kubernetes_api_server/cw_dashboard_kubernetes_api_server.json))  | 参见 [监控 EKS 控制平面指标的最佳实践](https://aws.github.io/aws-eks-best-practices/reliability/docs/controlplane/#monitor-control-plane-metrics) 和 [EKS 可观测性](https://docs.aws.amazon.com/eks/latest/userguide/eks-observe.html) 以获取详细信息。  |
+| EKS  | Prometheus 指标  | 性能  | apiserver_request_duration_seconds, etcd_request_duration_seconds  | apiserver_request_duration_seconds, etcd_request_duration_seconds  |  |
+| ECS  |  | 可用性  | 服务 RUNNING 任务计数  | 服务 RUNNING 任务计数  | 参见 ECS CloudWatch 指标 [文档](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html#cw_running_task_count)  |
+| ECS  |  | 性能  | TargetResponseTime  | (例如 [p99 TargetResponseTime] < 100 毫秒或 CW 异常检测 1 分钟周期)  | 参见 ECS CloudWatch 指标 [文档](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html#cw_running_task_count)  |
+| EC2 (.NET Core)  | CloudWatch Agent 性能计数器  | 可用性  | (例如 [ASP.NET 应用程序错误总数/秒](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-metrics-ec2.html#appinsights-metrics-ec2-built-in) < 'N')  | (例如 [ASP.NET 应用程序错误总数/秒](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-metrics-ec2.html#appinsights-metrics-ec2-built-in) < 'N')  | 参见 EC2 CloudWatch Application Insights [文档](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-metrics-ec2.html#appinsights-metrics-ec2-built-in)  |
 
-|AWS Service	|Feature	|Measurement	|Metric	|Example	|Notes	|
-|---	|---	|---	|---	|---	|---	|
-|CW	|Synthetics	|Availability	|**SuccessPercent**	|(Ex. SuccessPercent > 90 or CW Anomaly Detection for 1min Period)<br/>**[Metric Math where m1 is SuccessPercent if Canaries run each weekday 7a-8a (CloudWatchSynthetics): ** <br/>`IF(((DAY(m1)<6) AND (HOUR(m1)>7 AND HOUR(m1)<8)),m1)]`	|	|
-|	|	|	|	|	|	|
-|CW	|Synthetics	|Availability	|VisualMonitoringSuccessPercent	|(Ex. VisualMonitoringSuccessPercent > 90 for 5 min Period for UI screenshot comparisons)<br/>**[Metric Math where m1 is SuccessPercent if Canaries run each weekday 7a-8a (CloudWatchSynthetics): ** <br/>`IF(((DAY(m1)<6) AND (HOUR(m1)>7 AND HOUR(m1)<8)),m1)`	|If customer expects canary to match predetermined UI screenshot	|
-|	|	|	|	|	|	|
-|CW	|RUM	|Response Time	|Apdex Score	|(Ex. Apdex score: <br/> NavigationFrustratedCount < ‘N’ expected value)	|	|
-|	|	|	|	|	|	|
+#### 3.2.5 数据库（RDS）
 
+| AWS 服务  | 功能  | 衡量标准  | 指标  | 示例  | 备注  |
+| --- | --- | --- | --- | --- | --- |
+| RDS Aurora  | 性能洞察（PI）  | 可用性  | 平均活动会话数  | (例如 平均活动会话数与 CW 异常检测 1 分钟周期)  | 参见 RDS Aurora CloudWatch PI [文档](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.ActiveSessions.html#USER_PerfInsights.Overview.ActiveSessions.AAS)  |
+| RDS Aurora  |  | 灾难恢复（DR）  | AuroraGlobalDBRPOLag  | (例如 AuroraGlobalDBRPOLag < 30000 毫秒 1 分钟周期)  | 参见 RDS Aurora CloudWatch [文档](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMonitoring.Metrics.html)  |
+| RDS Aurora  |  | 性能  | 提交延迟、缓冲区缓存命中率、DDL 延迟、DML 延迟  | (例如 提交延迟与 CW 异常检测 1 分钟周期)  | 参见 RDS Aurora CloudWatch PI [文档](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.ActiveSessions.html#USER_PerfInsights.Overview.ActiveSessions.AAS)  |
+| RDS (MSSQL)  | PI  | 性能  | SQL 编译  | (例如 <br/>SQL 编译 > 'M' 5 分钟周期)  | 参见 RDS CloudWatch PI [文档](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights_Counters.html#USER_PerfInsights_Counters.SQLServer)  |
 
-#### 3.2.2 API Frontend
+## 4.0 使用 Amazon CloudWatch 和 Metric Math 计算 SLIs、SLOs 和 SLAs
 
+### 4.1 Amazon CloudWatch 和 Metric Math
 
-|AWS Service	|Feature	|Measurement	|Metric	|Example	|Notes	|
-|---	|---	|---	|---	|---	|---	|
-|CloudFront	|	|Availability	|Total error rate	|(Ex. [Total error rate] < 10 or CW Anomaly Detection for 1min Period)	|Availability as a measure of error rate	|
-|	|	|	|	|	|	|
-|CloudFront	|(Requires turning on additional metrics)	|Peformance	|Cache hit rate	|(Ex.Cache hit rate < 10 CW Anomaly Detection for 1min Period)	|	|
-|	|	|	|	|	|	|
-|Route53	|Health checks	|(Cross region) Availability	|HealthCheckPercentageHealthy	|(Ex. [Minimum of HealthCheckPercentageHealthy] > 90 or CW Anomaly Detection for 1min Period)	|	|
-|	|	|	|	|	|	|
-|Route53	|Health checks	|Latency	|TimeToFirstByte	|(Ex. [p99 TimeToFirstByte] < 100 ms or CW Anomaly Detection for 1min Period)	|	|
-|	|	|	|	|	|	|
-|API Gateway	|	|Availability	|Count	|(Ex. [(4XXError + 5XXError) / Count) * 100] < 10 or CW Anomaly Detection for 1min Period)	|Availability as a measure of "abandoned" requests	|
-|	|	|	|	|	|	|
-|API Gateway	|	|Latency	|Latency (or IntegrationLatency i.e. backend latency)	|(Ex. p99 Latency < 1 sec or CW Anomaly Detection for 1min Period)	|p99 will have greater tolerance than lower percentile like p90. (p50 is same as average)	|
-|	|	|	|	|	|	|
-|API Gateway	|	|Performance	|CacheHitCount (and Misses)	|(Ex. [CacheMissCount / (CacheHitCount + CacheMissCount)  * 100] < 10 or CW Anomaly Detection for 1min Period)	|Performance as a measure of Cache (Misses)	|
-|	|	|	|	|	|	|
-|Application Load Balancer (ALB)	|	|Availability	|RejectedConnectionCount	|(Ex.[RejectedConnectionCount/(RejectedConnectionCount + RequestCount) * 100] < 10 CW Anomaly Detection for 1min Period)	|Availability as a measure of rejected requests due to max connections breached	|
-|	|	|	|	|	|	|
-|Application Load Balancer (ALB)	|	|Latency	|TargetResponseTime	|(Ex. p99 TargetResponseTime < 1 sec or CW Anomaly Detection for 1min Period)	|p99 will have greater tolerance than lower percentile like p90. (p50 is same as average)	|
-|	|	|	|	|	|	|
+Amazon CloudWatch 提供对 AWS 资源的监控和可观测性服务。Metric Math 允许您使用 CloudWatch 指标数据执行计算，使其成为计算 SLIs、SLOs 和 SLAs 的理想工具。
 
+#### 4.1.1 启用详细监控
 
-#### 3.2.3 Serverless
+为您的 AWS 资源启用详细监控，以获得 1 分钟的数据粒度，从而实现更准确的 SLI 计算。
 
-|AWS Service	|Feature	|Measurement	|Metric	|Example	|Notes	|
-|---	|---	|---	|---	|---	|---	|
-|S3	|Request metrics	|Availability	|AllRequests	|(Ex. [(4XXErrors + 5XXErrors) / AllRequests) * 100] < 10 or CW Anomaly Detection for 1min Period)	|Availability as a measure of "abandoned" requests	|
-|	|	|	|	|	|	|
-|S3	|Request metrics	|(Overall) Latency	|TotalRequestLatency	|(Ex. [p99 TotalRequestLatency] < 100 ms or CW Anomaly Detection for 1min Period)	|	|
-|	|	|	|	|	|	|
-|DynamoDB (DDB)	|	|Availability	|ThrottledRequests	|(Ex. [ThrottledRequests] < 100 or CW Anomaly Detection for 1min Period)	|Availability as a measure of "throttled" requests	|
-|	|	|	|	|	|	|
-|DynamoDB (DDB)	|	|Latency	|SuccessfulRequestLatency	|(Ex. [p99 SuccessfulRequestLatency] < 100 ms or CW Anomaly Detection for 1min Period)	|	|
-|	|	|	|	|	|	|
-|Step Functions	|	|Availability	|ExecutionsFailed	|(Ex. ExecutionsFailed = 0)<br/>**[ex. Metric Math where m1 is ExecutionsFailed (Step function Execution) UTC time: `IF(((DAY(m1)<6 OR ** ** DAY(m1)==7) AND (HOUR(m1)>21 AND HOUR(m1)<7)),m1)]`	|Assuming business flow that requests completion of step functions as a daily operation 9p-7a during weekdays (start of day business operations)	|
-|	|	|	|	|	|	|
+#### 4.1.2 使用命名空间和维度组织指标
 
+使用命名空间和维度对指标进行分类和过滤，以便更轻松地进行分析。例如，使用命名空间将与特定服务相关的指标分组，并使用维度区分该服务的各个实例。
 
-#### 3.2.4 Compute and Containers
+### 4.2 使用 Metric Math 计算 SLIs
 
-|AWS Service	|Feature	|Measurement	|Metric	|Example	|Notes	|
-|---	|---	|---	|---	|---	|---	|
-|EKS	|Prometheus metrics	|Availability	|APIServer Request Success Ratio	|(ex. Prometheus metric like  [APIServer Request Success Ratio](https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/service/cwagent-prometheus/sample_cloudwatch_dashboards/kubernetes_api_server/cw_dashboard_kubernetes_api_server.json))	|See [best practices for monitoring EKS control plane metrics](https://aws.github.io/aws-eks-best-practices/reliability/docs/controlplane/#monitor-control-plane-metrics) and [EKS observability](https://docs.aws.amazon.com/eks/latest/userguide/eks-observe.html) for details.	|
-|	|	|	|	|	|	|
-|EKS	|Prometheus metrics	|Performance	|apiserver_request_duration_seconds, etcd_request_duration_seconds	|apiserver_request_duration_seconds, etcd_request_duration_seconds	|	|
-|	|	|	|	|	|	|
-|ECS	|	|Availability	|Service RUNNING task count	|Service RUNNING task count	|See ECS CW metrics [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html#cw_running_task_count)	|
-|	|	|	|	|	|	|
-|ECS	|	|Performance	|TargetResponseTime	|(ex.  [p99 TargetResponseTime] < 100 ms or CW Anomaly Detection for 1min Period)	|See ECS CW metrics [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html#cw_running_task_count)	|
-|	|	|	|	|	|	|
-|EC2 (.NET Core)	|CW Agent Performance Counters	|Availability	|(ex. [ASP.NET Application Errors Total/Sec](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-metrics-ec2.html#appinsights-metrics-ec2-built-in) < 'N')	|(ex. [ASP.NET Application Errors Total/Sec](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-metrics-ec2.html#appinsights-metrics-ec2-built-in) < 'N')	|See EC2 CW Application Insights [documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-metrics-ec2.html#appinsights-metrics-ec2-built-in)	|
-|	|	|	|	|	|	|
+#### 4.2.1 可用性
 
-
-#### 3.2.5 Databases (RDS)
-
-|AWS Service	|Feature	|Measurement	|Metric	|Example	|Notes	|
-|---	|---	|---	|---	|---	|---	|
-|RDS Aurora	|Performance Insights (PI)	|Availability	|Average active sessions	|(Ex. Average active serssions with CW Anomaly Detection for 1min Period)	|See RDS Aurora CW PI [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.ActiveSessions.html#USER_PerfInsights.Overview.ActiveSessions.AAS)	|
-|	|	|	|	|	|	|
-|RDS Aurora	|	|Disaster Recovery (DR)	|AuroraGlobalDBRPOLag	|(Ex. AuroraGlobalDBRPOLag < 30000 ms for 1min Period)	|See RDS Aurora CW [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMonitoring.Metrics.html)	|
-|	|	|	|	|	|	|
-|RDS Aurora	|	|Performance	|Commit Latency, Buffer Cache Hit Ratio, DDL Latency, DML Latency	|(Ex. Commit Latency with CW Anomaly Detection for 1min Period)	|See RDS Aurora CW PI [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.ActiveSessions.html#USER_PerfInsights.Overview.ActiveSessions.AAS)	|
-|	|	|	|	|	|	|
-|RDS (MSSQL)	|PI	|Performance	|SQL Compilations	|(Ex. <br/>SQL Compliations > 'M' for 5 min Period)	|See RDS CW PI [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights_Counters.html#USER_PerfInsights_Counters.SQLServer)	|
-|	|	|	|	|	|	|
-
-
-## 4.0 Using Amazon CloudWatch and Metric Math for Calculating SLIs, SLOs, and SLAs
-
-### 4.1 Amazon CloudWatch and Metric Math
-
-Amazon CloudWatch provides monitoring and observability services for AWS resources. Metric Math allows you to perform calculations using CloudWatch metric data, making it an ideal tool for calculating SLIs, SLOs, and SLAs.
-
-#### 4.1.1 Enabling Detailed Monitoring
-
-Enable Detailed Monitoring for your AWS resources to get 1-minute data granularity, allowing for more accurate SLI calculations.
-
-#### 4.1.2 Organizing Metrics with Namespaces and Dimensions
-
-Use Namespaces and Dimensions to categorize and filter metrics for easier analysis. For example, use Namespaces to group metrics related to a specific service, and Dimensions to differentiate between various instances of that service.
-
-### 4.2 Calculating SLIs with Metric Math
-
-#### 4.2.1 Availability
-
-To calculate availability, divide the number of successful requests by the total number of requests:
+要计算可用性，将成功请求的数量除以总请求数：
 
 ```
-availability = 100 * (successful_requests / total_requests)
+可用性 = 100 * (成功请求数 / 总请求数)
 ```
 
+**示例：**
 
-**Example:**
+假设您有一个 API Gateway，具有以下指标：
+- `4XXError`：4xx 客户端错误的数量
+- `5XXError`：5xx 服务器错误的数量
+- `Count`：总请求数
 
-Suppose you have an API Gateway with the following metrics:
-- `4XXError`: Number of 4xx client errors
-- `5XXError`: Number of 5xx server errors
-- `Count`: Total number of requests
-
-Use Metric Math to calculate the availability:
-
-```
-availability = 100 * ((Count - 4XXError - 5XXError) / Count)
-```
-
-
-#### 4.2.2 Latency
-
-To calculate average latency, use the `SampleCount` and `Sum` statistics provided by CloudWatch:
+使用 Metric Math 计算可用性：
 
 ```
-average_latency = Sum / SampleCount
+可用性 = 100 * ((Count - 4XXError - 5XXError) / Count)
 ```
 
+#### 4.2.2 延迟
 
-**Example:**
-
-Suppose you have a Lambda function with the following metric:
-- `Duration`: Time taken to execute the function
-
-Use Metric Math to calculate the average latency:
+要计算平均延迟，使用 CloudWatch 提供的 `SampleCount` 和 `Sum` 统计信息：
 
 ```
-average_latency = Duration.Sum / Duration.SampleCount
+平均延迟 = Sum / SampleCount
 ```
 
+**示例：**
 
-#### 4.2.3 Error Rate
+假设您有一个 Lambda 函数，具有以下指标：
+- `Duration`：执行函数所需的时间
 
-To calculate the error rate, divide the number of failed requests by the total number of requests:
-
-```
-error_rate = 100 * (failed_requests / total_requests)
-```
-
-
-**Example:**
-
-Using the API Gateway example from before:
+使用 Metric Math 计算平均延迟：
 
 ```
-error_rate = 100 * ((4XXError + 5XXError) / Count)
+平均延迟 = Duration.Sum / Duration.SampleCount
 ```
 
+#### 4.2.3 错误率
 
-### 4.4 Defining and Monitoring SLOs
-
-#### 4.4.1 Setting Realistic Targets
-
-Define SLO targets based on user expectations and historical performance data. Set achievable targets to ensure a balance between service reliability and resource utilization.
-
-#### 4.4.2 Monitoring SLOs with CloudWatch
-
-Create CloudWatch Alarms to monitor your SLIs and notify you when they approach or breach SLO targets. This enables you to proactively address issues and maintain service reliability.
-
-#### 4.4.3 Reviewing and Adjusting SLOs
-
-Periodically review your SLOs to ensure they remain relevant as your service evolves. Adjust targets if necessary and communicate any changes to stakeholders.
-
-### 4.5 Defining and Measuring SLAs
-
-#### 4.5.1 Setting Realistic Targets
-
-Define SLA targets based on historical performance data and user expectations. Set achievable targets to ensure a balance between service reliability and resource utilization.
-
-#### 4.5.2 Monitoring and Alerting
-
-Set up CloudWatch Alarms to monitor SLIs and notify you when they approach or breach SLA targets. This enables you to proactively address issues and maintain service reliability.
-
-#### 4.5.3 Regularly Reviewing SLAs
-
-Periodically review SLAs to ensure they remain relevant as your service evolves. Adjust targets if necessary and communicate any changes to stakeholders.
-
-### 4.6 Measuring SLA or SLO Performance Over a Set Period
-
-To measure SLA or SLO performance over a set period, such as a calendar month, use CloudWatch metric data with custom time ranges.
-
-**Example:**
-
-Suppose you have an API Gateway with an SLO target of 99.9% availability. To measure the availability for the month of April, use the following Metric Math expression:
+要计算错误率，将失败请求的数量除以总请求数：
 
 ```
-availability = 100 * ((Count - 4XXError - 5XXError) / Count)
+错误率 = 100 * (失败请求数 / 总请求数)
 ```
 
+**示例：**
 
-Then, configure the CloudWatch metric data query with a custom time range:
+使用之前的 API Gateway 示例：
 
-- **Start Time:** `2023-04-01T00:00:00Z`
-- **End Time:** `2023-04-30T23:59:59Z`
-- **Period:** `2592000` (30 days in seconds)
+```
+错误率 = 100 * ((4XXError + 5XXError) / Count)
+```
 
-Finally, use the `AVG` statistic to calculate the average availability over the month. If the average availability is equal to or greater than the SLO target, you have met your objective.
+### 4.4 定义和监控 SLOs
 
-## 5.0 Summary
+#### 4.4.1 设置现实的目标
 
-Key Performance Indicators (KPIs) a.k.a 'Golden Signals' must align to business and stake-holder requirements. Calculating SLIs, SLOs, and SLAs using Amazon CloudWatch and Metric Math is crucial for managing service reliability. Follow the best practices outlined in this guide to effectively monitor and maintain the performance of your AWS resources. Remember to enable Detailed Monitoring, organize metrics with Namespaces and Dimensions, use Metric Math for SLI calculations, set realistic SLO and SLA targets, and establish monitoring and alerting systems with CloudWatch Alarms. By applying these best practices, you can ensure optimal service reliability, better resource utilization, and improved customer satisfaction.
+根据用户期望和历史性能数据定义 SLO 目标。设置可实现的目标，以确保服务可靠性和资源利用率之间的平衡。
 
+#### 4.4.2 使用 CloudWatch 监控 SLOs
 
+创建 CloudWatch 告警以监控您的 SLIs，并在它们接近或违反 SLO 目标时通知您。这使您能够主动解决问题并保持服务可靠性。
 
+#### 4.4.3 审查和调整 SLOs
 
+定期审查您的 SLOs，以确保它们随着服务的发展保持相关性。必要时调整目标，并向利益相关者传达任何变更。
+
+### 4.5 定义和衡量 SLAs
+
+#### 4.5.1 设置现实的目标
+
+根据历史性能数据和用户期望定义 SLA 目标。设置可实现的目标，以确保服务可靠性和资源利用率之间的平衡。
+
+#### 4.5.2 监控和告警
+
+设置 CloudWatch 告警以监控 SLIs，并在它们接近或违反 SLA 目标时通知您。这使您能够主动解决问题并保持服务可靠性。
+
+#### 4.5.3 定期审查 SLAs
+
+定期审查 SLAs，以确保它们随着服务的发展保持相关性。必要时调整目标，并向利益相关者传达任何变更。
+
+### 4.6 衡量 SLA 或 SLO 在一段时间内的表现
+
+要衡量 SLA 或 SLO 在一段时间内（例如一个日历月）的表现，请使用具有自定义时间范围的 CloudWatch 指标数据。
+
+**示例：**
+
+假设您有一个 API Gateway，其 SLO 目标为 99.9% 的可用性。要衡量 4 月份的可用性，请使用以下 Metric Math 表达式：
+
+```
+可用性 = 100 * ((Count - 4XXError - 5XXError) / Count)
+```
+
+然后，配置 CloudWatch 指标数据查询，使用自定义时间范围：
+- **开始时间**：`2023-04-01T00:00:00Z`
+- **结束时间**：`2023-04-30T23:59:59Z`
+- **周期**：`2592000`（30 天的秒数）
+
+最后，使用 `AVG` 统计信息计算该月的平均可用性。如果平均可用性等于或大于 SLO 目标，则您已达到目标。
+
+## 5.0 总结
+
+关键绩效指标（KPIs），也称为“黄金信号”，必须与业务和利益相关者的需求保持一致。使用 Amazon CloudWatch 和 Metric Math 计算 SLIs、SLOs 和 SLAs 对于管理服务可靠性至关重要。遵循本指南中的最佳实践，以有效监控和维护您的 AWS 资源的性能。请记住启用详细监控，使用命名空间和维度组织指标，使用 Metric Math 进行 SLI 计算，设置现实的 SLO 和 SLA 目标，并使用 CloudWatch 告警建立监控和告警系统。通过应用这些最佳实践，您可以确保最佳的服务可靠性、更好的资源利用率和更高的客户满意度。

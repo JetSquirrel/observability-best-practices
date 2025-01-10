@@ -1,18 +1,18 @@
-# Amazon Managed Service for Prometheus Alert Manager
+# Amazon Managed Service for Prometheus 告警管理器
 
-## Introduction
+## 简介
 
-[Amazon Managed Service for Prometheus](https://aws.amazon.com/prometheus/) (AMP) supports two types of rules namely '**Recording rules**' and '**Alerting rules**', which can be imported from your existing Prometheus server and are evaluated at regular intervals.
+[Amazon Managed Service for Prometheus](https://aws.amazon.com/prometheus/) (AMP) 支持两种类型的规则，即“**记录规则**”和“**告警规则**”，可以从现有的 Prometheus 服务器导入，并定期进行评估。
 
-[Alerting rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/) allow customers to define alert conditions based on [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) and a threshold. When the value of the alerting rule exceeds threshold, a notification is sent to Alert manager in Amazon Managed Service for Prometheus which provides similar functionality to alert manager in standalone Prometheus. An alert is the outcome of an alerting rule in Prometheus when it is active.
+[告警规则](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/) 允许客户基于 [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) 和阈值定义告警条件。当告警规则的值超过阈值时，通知将发送到 Amazon Managed Service for Prometheus 中的告警管理器，该管理器提供与独立 Prometheus 中的告警管理器类似的功能。告警是 Prometheus 中告警规则在激活时的结果。
 
-## Alerting Rules File
+## 告警规则文件
 
-An Alerting rule in Amazon Managed Service for Prometheus is defined by a rules file in YAML format, which follows the same format as a rules file in standalone Prometheus. Customers can have multiple rules files in an Amazon Managed Service for Prometheus workspace. A workspace is a logical space dedicated to the storage and querying of Prometheus metrics.
+Amazon Managed Service for Prometheus 中的告警规则由 YAML 格式的规则文件定义，该文件遵循与独立 Prometheus 中的规则文件相同的格式。客户可以在 Amazon Managed Service for Prometheus 工作区中拥有多个规则文件。工作区是专门用于存储和查询 Prometheus 指标的逻辑空间。
 
-A rules file typically has the following fields:
+规则文件通常包含以下字段：
 
-```
+```yaml
 groups:
   - name:
   rules:
@@ -24,19 +24,19 @@ groups:
 ```
 
 ```console
-Groups: A collection of rules that are run sequentially at a regular interval
-Name: Name of the group
-Rules: The rules in a group
-Alert: Name of the alert
-Expr: The expression for the alert to trigger
-For: Minimum duration for an alert’s expression to be exceeding threshold before updating to a firing status
-Labels: Any additional labels attached to the alert
-Annotations: Contextual details such as a description or link
+Groups: 一组按顺序定期运行的规则
+Name: 组的名称
+Rules: 组中的规则
+Alert: 告警的名称
+Expr: 触发告警的表达式
+For: 告警表达式超过阈值的最小持续时间，然后更新为触发状态
+Labels: 附加到告警的任何标签
+Annotations: 上下文详细信息，例如描述或链接
 ```
 
-A sample rule file looks like below
+一个示例规则文件如下所示：
 
-```
+```yaml
 groups:
   - name: test
     rules:
@@ -49,17 +49,17 @@ groups:
       for: 2m
 ```
 
-## Alert Manager Configuration File
+## 告警管理器配置文件
 
-The Amazon Managed Service for Prometheus Alert Manager uses a configuration file in YAML format to set up the alerts (for the receiving service) that is in the same structure as an alert manager config file in standalone Prometheus. The configuration file consists of two key sections for alert manager and templating
+Amazon Managed Service for Prometheus 告警管理器使用 YAML 格式的配置文件来设置告警（用于接收服务），其结构与独立 Prometheus 中的告警管理器配置文件相同。配置文件由两个关键部分组成：告警管理器和模板。
 
-1.  [template_files](https://prometheus.io/docs/prometheus/latest/configuration/template_reference/), contains the templates of annotations and labels in alerts exposed as the `$value`, `$labels`, `$externalLabels`, and `$externalURL` variables for convenience. The `$labels` variable holds the label key/value pairs of an alert instance. The configured external labels can be accessed via the `$externalLabels` variable. The `$value` variable holds the evaluated value of an alert instance. `.Value`, `.Labels`, `.ExternalLabels`, and `.ExternalURL` contain the alert value, the alert labels, the globally configured external labels, and the external URL (configured with `--web.external-url`) respectively.
+1. **[template_files](https://prometheus.io/docs/prometheus/latest/configuration/template_reference/)**: 包含告警中注释和标签的模板，暴露为 `$value`、`$labels`、`$externalLabels` 和 `$externalURL` 变量以便使用。`$labels` 变量保存告警实例的标签键/值对。配置的外部标签可以通过 `$externalLabels` 变量访问。`$value` 变量保存告警实例的评估值。`.Value`、`.Labels`、`.ExternalLabels` 和 `.ExternalURL` 分别包含告警值、告警标签、全局配置的外部标签和外部 URL（通过 `--web.external-url` 配置）。
 
-2.  [alertmanager_config](https://prometheus.io/docs/alerting/latest/configuration/), contains the alert manager configuration that uses the same structure as an alert manager config file in standalone Prometheus.
+2. **[alertmanager_config](https://prometheus.io/docs/alerting/latest/configuration/)**: 包含告警管理器配置，其结构与独立 Prometheus 中的告警管理器配置文件相同。
 
-A sample alert manager configuration file having both template_files and alertmanager_config looks like below,
+一个包含 `template_files` 和 `alertmanager_config` 的示例告警管理器配置文件如下所示：
 
-```
+```yaml
 template_files:
   default_template: |
     {{ define "sns.default.subject" }}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}]{{ end }}
@@ -82,19 +82,19 @@ alertmanager_config: |
           value: SEV2
 ```
 
-## Key aspects of alerting
+## 告警的关键方面
 
-There are three important aspects to be aware of when creating Amazon Managed Service for Prometheus [Alert Manager configuration file](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html).
+在创建 Amazon Managed Service for Prometheus [告警管理器配置文件](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html) 时，有三个重要方面需要注意：
 
-- **Grouping**: This helps collect similar alerts into a single notification, which is useful when the blast radius of failure or outage is large affecting many systems and several alerts fire simultaneously. This can also be used to group into categories (e.g., node alerts, pod alerts). The [route](https://prometheus.io/docs/alerting/latest/configuration/#route) block in the alert manager configuration file can be used to configure this grouping.
-- **Inhibition**: This is a way to suppress certain notifications to avoid spamming similar alerts that are already active and fired. [inhibit_rules](https://prometheus.io/docs/alerting/latest/configuration/#inhibit_rule) block can be used to write inhibition rules.
-- **Silencing**: Alerts can be muted for a specified duration, such as during a maintenance window or a planned outage. Incoming alerts are verified for matching all equality or regular expression before silencing the alert. [PutAlertManagerSilences](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-PutAlertManagerSilences) API can be used to create silencing.
+- **分组**：这有助于将类似的告警收集到单个通知中，当故障或中断的影响范围较大且同时触发多个告警时非常有用。这也可以用于按类别分组（例如节点告警、Pod 告警）。可以在告警管理器配置文件中的 [route](https://prometheus.io/docs/alerting/latest/configuration/#route) 块中配置此分组。
+- **抑制**：这是一种抑制某些通知以避免对已经激活并触发的类似告警进行垃圾邮件通知的方式。可以使用 [inhibit_rules](https://prometheus.io/docs/alerting/latest/configuration/#inhibit_rule) 块编写抑制规则。
+- **静默**：可以在指定的持续时间内静默告警，例如在维护窗口或计划中断期间。在静默告警之前，传入的告警将验证是否匹配所有相等性或正则表达式。可以使用 [PutAlertManagerSilences](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-PutAlertManagerSilences) API 创建静默。
 
-## Route alerts through Amazon Simple Notification Service (SNS)
+## 通过 Amazon Simple Notification Service (SNS) 路由告警
 
-Currently [Amazon Managed Service for Prometheus Alert Manager supports Amazon SNS](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-receiver-AMPpermission.html) as the only receiver. The key section in the alertmanager_config block is the receivers, which lets customers configure [Amazon SNS to receive alerts](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-receiver-config.html). The following section can be used as a template for the receivers block.
+目前，[Amazon Managed Service for Prometheus 告警管理器支持 Amazon SNS](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-receiver-AMPpermission.html) 作为唯一的接收器。`alertmanager_config` 块中的关键部分是 `receivers`，它允许客户配置 [Amazon SNS 以接收告警](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-receiver-config.html)。以下部分可以用作 `receivers` 块的模板。
 
-```
+```yaml
 - name: name_of_receiver
   sns_configs:
     - sigv4:
@@ -106,9 +106,9 @@ Currently [Amazon Managed Service for Prometheus Alert Manager supports Amazon S
        value: <somevalue>
 ```
 
-The Amazon SNS configuration uses the following template as default unless its explicitly overridden.
+Amazon SNS 配置使用以下模板作为默认值，除非显式覆盖：
 
-```
+```yaml
 {{ define "sns.default.message" }}{{ .CommonAnnotations.SortedPairs.Values | join " " }}
   {{ if gt (len .Alerts.Firing) 0 -}}
   Alerts Firing:
@@ -121,69 +121,68 @@ The Amazon SNS configuration uses the following template as default unless its e
 {{- end }}
 ```
 
-Additional Reference: [Notification Template Examples](https://prometheus.io/docs/alerting/latest/notification_examples/)
+更多参考：[通知模板示例](https://prometheus.io/docs/alerting/latest/notification_examples/)
 
-## Routing alerts to other destinations beyond Amazon SNS
+## 将告警路由到 Amazon SNS 之外的其他目的地
 
-Amazon Managed Service for Prometheus Alert Manager can use [Amazon SNS to connect to other destinations](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-SNS-otherdestinations.html) such as email, webhook (HTTP), Slack, PageDuty, and OpsGenie.
+Amazon Managed Service for Prometheus 告警管理器可以使用 [Amazon SNS 连接到其他目的地](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-SNS-otherdestinations.html)，例如电子邮件、Webhook（HTTP）、Slack、PagerDuty 和 OpsGenie。
 
-- **Email** A successful notification will result in an email received from Amazon Managed Service for Prometheus Alert Manager through Amazon SNS topic with the alert details as one of the targets.
-- Amazon Managed Service for Prometheus Alert Manager can [send alerts in JSON format](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-receiver-JSON.html), so that they can be processed downstream from Amazon SNS in AWS Lambda or in webhook-receiving endpoints.
-- **Webhook** An existing Amazon SNS topic can be configured to output messages to a webhook endpoint. Webhooks are messages in serialized form-encoded JSON or XML formats, exchanged over HTTP between applications based on event driven triggers. This can be used to hook any existing [SIEM or collaboration tools](https://repost.aws/knowledge-center/sns-lambda-webhooks-chime-slack-teams) for alerting, ticketing or incident management systems.
-- **Slack** Customers can integrate with [Slack’s](https://aws.amazon.com/blogs/mt/how-to-integrate-amazon-managed-service-for-prometheus-with-slack/) email-to-channel integration where Slack can accept an email and forward it to a Slack channel, or use a Lambda function to rewrite the SNS notification to Slack.
-- **PagerDuty** The template used in `template_files` block in the `alertmanager_config` definition can be customized to send the payload to [PagerDuty](https://aws.amazon.com/blogs/mt/using-amazon-managed-service-for-prometheus-alert-manager-to-receive-alerts-with-pagerduty/) as a destination of Amazon SNS.
+- **电子邮件**：成功的通知将导致从 Amazon Managed Service for Prometheus 告警管理器通过 Amazon SNS 主题接收电子邮件，其中包含告警详细信息作为目标之一。
+- Amazon Managed Service for Prometheus 告警管理器可以 [以 JSON 格式发送告警](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-receiver-JSON.html)，以便它们可以从 Amazon SNS 下游在 AWS Lambda 或 Webhook 接收端点中进行处理。
+- **Webhook**：可以将现有的 Amazon SNS 主题配置为将消息输出到 Webhook 端点。Webhook 是基于事件驱动触发器在应用程序之间通过 HTTP 交换的序列化编码 JSON 或 XML 格式的消息。这可以用于连接到任何现有的 [SIEM 或协作工具](https://repost.aws/knowledge-center/sns-lambda-webhooks-chime-slack-teams) 以进行告警、票证或事件管理系统。
+- **Slack**：客户可以集成 [Slack 的](https://aws.amazon.com/blogs/mt/how-to-integrate-amazon-managed-service-for-prometheus-with-slack/) 电子邮件到频道集成，其中 Slack 可以接受电子邮件并将其转发到 Slack 频道，或者使用 Lambda 函数重写 SNS 通知到 Slack。
+- **PagerDuty**：可以在 `alertmanager_config` 定义中的 `template_files` 块中自定义模板，以将有效负载发送到 [PagerDuty](https://aws.amazon.com/blogs/mt/using-amazon-managed-service-for-prometheus-alert-manager-to-receive-alerts-with-pagerduty/) 作为 Amazon SNS 的目的地。
 
-Additional Reference: [Custom Alert manager Templates](https://prometheus.io/blog/2016/03/03/custom-alertmanager-templates/)
+更多参考：[自定义告警管理器模板](https://prometheus.io/blog/2016/03/03/custom-alertmanager-templates/)
 
-## Alert status
+## 告警状态
 
-Alerting rules define alert conditions based on expressions to send alerts to any notification service, whenever the set threshold is crossed. An example rule and its expression is shown below.
+告警规则基于表达式定义告警条件，以在超过设定的阈值时向任何通知服务发送告警。示例如下：
 
-```
+```yaml
 rules:
 - alert: metric:alerting_rule
   expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0
   for: 2m
-
 ```
 
-Whenever the alert expression results in one or more vector elements at a given point in time, the alert counts as active. The alerts take active (pending | firing) or resolved status.
+每当告警表达式在某个时间点产生一个或多个向量元素时，告警将被视为激活。告警可以处于激活（pending | firing）或已解决状态。
 
-- **Pending**: The time elapsed since threshold breach is less than the recording interval
-- **Firing**: The time elapsed since threshold breach is more than the recording interval and Alert Manager is routing alerts.
-- **Resolved**: The alert is no longer firing because the threshold is no longer breached.
+- **Pending**：自阈值突破以来经过的时间小于记录间隔。
+- **Firing**：自阈值突破以来经过的时间大于记录间隔，并且告警管理器正在路由告警。
+- **Resolved**：由于不再突破阈值，告警不再触发。
 
-This can be manually verified by querying the Amazon Managed Service for Prometheus Alert Manager endpoint with [ListAlerts](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-ListAlerts) API using [awscurl](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-compatible-APIs.html) command. A sample request is shown below.
+可以通过使用 [awscurl](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-compatible-APIs.html) 命令查询 Amazon Managed Service for Prometheus 告警管理器端点，使用 [ListAlerts](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-ListAlerts) API 手动验证这一点。示例如下：
 
-```
+```bash
 awscurl https://aps-workspaces.us-east-1.amazonaws.com/workspaces/$WORKSPACE_ID/alertmanager/api/v2/alerts --service="aps" -H "Content-Type: application/json"
 ```
 
-## Amazon Managed Service for Prometheus Alert Manager rules in Amazon Managed Grafana
+## Amazon Managed Grafana 中的 Amazon Managed Service for Prometheus 告警管理器规则
 
-Amazon Managed Grafana (AMG) alerting feature allows customers to gain visibility into Amazon Managed Service for Prometheus Alert Manager alerts from their Amazon Managed Grafana workspace. Customers using the Amazon Managed Service for Prometheus workspaces to collect Prometheus metrics utilize the fully managed Alert Manager and Ruler features in the service to configure alerting and recording rules. With this feature, they can visualize all their alert and recording rules configured in their Amazon Managed Service for Prometheus workspace. Prometheus alerts view can be in Amazon Managed Grafana (AMG) console by checking the Grafana alerting checkbox in the Workspace configuration options tab. Once enabled, this will also migrate native Grafana alerts that were previously created in Grafana dashboards into a new Alerting page in the Grafana workspace.
+Amazon Managed Grafana (AMG) 的告警功能允许客户从其 Amazon Managed Grafana 工作区中查看 Amazon Managed Service for Prometheus 告警管理器告警。使用 Amazon Managed Service for Prometheus 工作区收集 Prometheus 指标的客户可以利用服务中的完全托管告警管理器和 Ruler 功能来配置告警和记录规则。通过此功能，他们可以可视化在其 Amazon Managed Service for Prometheus 工作区中配置的所有告警和记录规则。可以通过在 Grafana 工作区配置选项选项卡中选中 Grafana 告警复选框来查看 Prometheus 告警视图。一旦启用，这还将把之前在 Grafana 仪表板中创建的本机 Grafana 告警迁移到 Grafana 工作区中的新告警页面。
 
-Reference: [Announcing Prometheus Alert manager rules in Amazon Managed Grafana](https://aws.amazon.com/blogs/mt/announcing-prometheus-alertmanager-rules-in-amazon-managed-grafana/)
+参考：[宣布 Amazon Managed Grafana 中的 Prometheus 告警管理器规则](https://aws.amazon.com/blogs/mt/announcing-prometheus-alertmanager-rules-in-amazon-managed-grafana/)
 
-![List of AMP alerts in Grafana](../../../images/amp-alerting.png)
+![Grafana 中的 AMP 告警列表](../../../images/amp-alerting.png)
 
-## Recommended alerts for a baseline monitoring
+## 基线监控的推荐告警
 
-Alerting is a key aspect of robust monitoring and observability best practices. The alerting mechanism should strike a balance between alert fatigue and missing critical alerts. Here are some of the alerts that are recommended to improve the overall reliability of the workloads. Various teams in the organization look at monitoring their infrastructure and workloads from different perspectives and hence this could be expanded or changed based on the requirement and scenario & certainly this is not a comprehensive list.
+告警是强大的监控和可观测性最佳实践的关键方面。告警机制应在告警疲劳和错过关键告警之间取得平衡。以下是一些推荐的告警，以提高工作负载的整体可靠性。组织中的各个团队从不同的角度监控其基础设施和工作负载，因此可以根据需求和场景扩展或更改此列表，当然这不是一个全面的列表。
 
-- Container Node is using more than certain (ex. 80%) allocated memory limit.
-- Container Node is using more than certain (ex. 80%) allocated CPU limit.
-- Container Node is using more than certain (ex. 90%) allocated disk space.
-- Container in pod in namespace is using more than certain (ex. 80%) allocated CPU limit.
-- Container in pod in namespace is using more than certain (ex. 80%) of memory limit.
-- Container in pod in namespace had too many restarts.
-- Persistent Volume in a namespace is using more than certain (max 75%) disk space.
-- Deployment is currently having no active pods running
-- Horizontal Pod Autoscaler (HPA) in namespace is running at max capacity
+- 容器节点使用的内存超过某些（例如 80%）分配的内存限制。
+- 容器节点使用的 CPU 超过某些（例如 80%）分配的 CPU 限制。
+- 容器节点使用的磁盘空间超过某些（例如 90%）分配的磁盘空间。
+- 命名空间中的 Pod 中的容器使用的 CPU 超过某些（例如 80%）分配的 CPU 限制。
+- 命名空间中的 Pod 中的容器使用的内存超过某些（例如 80%）分配的内存限制。
+- 命名空间中的 Pod 中的容器重启次数过多。
+- 命名空间中的持久卷使用的磁盘空间超过某些（最大 75%）分配的空间。
+- 部署当前没有运行的活动 Pod。
+- 命名空间中的 Horizontal Pod Autoscaler (HPA) 以最大容量运行。
 
-The essential thing in setting up alerts for the above or any similar scenario will require the expression to be changed as needed. For example,
+为上述或任何类似场景设置告警的关键在于根据需要更改表达式。例如：
 
-```
+```yaml
 expr: |
         ((sum(irate(container_cpu_usage_seconds_total{image!="",container!="POD", namespace!="kube-sys"}[30s])) by (namespace,container,pod) /
 sum(container_spec_cpu_quota{image!="",container!="POD", namespace!="kube-sys"} /
@@ -191,13 +190,13 @@ container_spec_cpu_period{image!="",container!="POD", namespace!="kube-sys"}) by
       for: 5m
 ```
 
-## ACK Controller for Amazon Managed Service for Prometheus
+## Amazon Managed Service for Prometheus 的 ACK 控制器
 
-Amazon Managed Service for Prometheus [AWS Controller for Kubernetes](https://github.com/aws-controllers-k8s/community) (ACK) controller is available for Workspace, Alert Manager and Ruler resources which lets customers take advantage of Prometheus using [custom resource definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) (CRDs) and native objects or services that provide supporting capabilities without having to define any resources outside of Kubernetes cluster. The [ACK controller for Amazon Managed Service for Prometheus](https://aws.amazon.com/blogs/mt/introducing-the-ack-controller-for-amazon-managed-service-for-prometheus/) can be used to manage all resources directly from the Kubernetes cluster that you’re monitoring, allowing Kubernetes to act as your ‘source of truth’ for your workload’s desired state. [ACK](https://aws-controllers-k8s.github.io/community/docs/community/overview/) is a collection of Kubernetes CRDs and custom controllers working together to extend the Kubernetes API and manage AWS resources.
+Amazon Managed Service for Prometheus [AWS Controller for Kubernetes](https://github.com/aws-controllers-k8s/community) (ACK) 控制器可用于 Workspace、告警管理器和 Ruler 资源，使客户能够利用 [自定义资源定义](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) (CRD) 和提供支持功能的本机对象或服务，而无需在 Kubernetes 集群之外定义任何资源。[Amazon Managed Service for Prometheus 的 ACK 控制器](https://aws.amazon.com/blogs/mt/introducing-the-ack-controller-for-amazon-managed-service-for-prometheus/) 可用于直接从您正在监控的 Kubernetes 集群管理所有资源，使 Kubernetes 成为您工作负载所需状态的“单一事实来源”。[ACK](https://aws-controllers-k8s.github.io/community/docs/community/overview/) 是一组 Kubernetes CRD 和自定义控制器，它们协同工作以扩展 Kubernetes API 并管理 AWS 资源。
 
-A snippet of alerting rules configured using ACK is shown below:
+使用 ACK 配置的告警规则片段如下所示：
 
-```
+```yaml
 apiVersion: prometheusservice.services.k8s.aws/v1alpha1
 kind: RuleGroupsNamespace
 metadata:
@@ -229,15 +228,15 @@ spec:
           description: "CPU load is < 30%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 ```
 
-## Restricting access to rules using IAM policy
+## 使用 IAM 策略限制对规则的访问
 
-Organizations require various teams to have their own rules to be created & administered for their recording and alerting requirements. Rules management in Amazon Managed Service for Prometheus allows rules to be access controlled using AWS Identity and Access Management (IAM) policy so that each team can control their own set of rules & alerts grouped by rulegroupnamespaces.
+组织要求各个团队为其记录和告警需求创建和管理自己的规则。Amazon Managed Service for Prometheus 中的规则管理允许使用 AWS Identity and Access Management (IAM) 策略对规则进行访问控制，以便每个团队可以控制其自己的规则和告警集，按 `rulegroupnamespaces` 分组。
 
-The below image shows two example rulegroupnamespaces called devops and engg added into Rules management of Amazon Managed Service for Prometheus.
+下图显示了两个示例 `rulegroupnamespaces`，称为 `devops` 和 `engg`，添加到 Amazon Managed Service for Prometheus 的规则管理中。
 
-![Recording and Alerting rule namespaces in AMP console](../../../images/AMP_rules_namespaces.png)
+![AMP 控制台中的记录和告警规则命名空间](../../../images/AMP_rules_namespaces.png)
 
-The below JSON is a sample IAM policy which restricts access to the devops rulegroupnamespace (shown above) with the Resource ARN specified. The notable actions in the below IAM policy are [PutRuleGroupsNamespace](https://docs.aws.amazon.com/cli/latest/reference/amp/put-rule-groups-namespace.html) and [DeleteRuleGroupsNamespace](https://docs.aws.amazon.com/cli/latest/reference/amp/delete-rule-groups-namespace.html) which are restricted to the specified Resource ARN of the rulegroupsnamespace of AMP workspace. Once the policy is created, it can be assigned to any required user, group or role for desired access control requirement. The Action in the IAM policy can be modified/restricted as required based on [IAM permissions](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html) for required & allowable actions.
+以下 JSON 是一个示例 IAM 策略，它限制对 `devops` `rulegroupnamespace`（如上所示）的访问，并指定了资源 ARN。此 IAM 策略中的显著操作是 [PutRuleGroupsNamespace](https://docs.aws.amazon.com/cli/latest/reference/amp/put-rule-groups-namespace.html) 和 [DeleteRuleGroupsNamespace](https://docs.aws.amazon.com/cli/latest/reference/amp/delete-rule-groups-namespace.html)，它们被限制为指定的 AMP 工作区的 `rulegroupnamespace` 的资源 ARN。创建策略后，可以将其分配给任何所需的用户、组或角色以满足所需的访问控制要求。可以根据 [IAM 权限](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html) 修改/限制 IAM 策略中的操作，以允许或限制所需的操作。
 
 ```json
 {
@@ -261,9 +260,9 @@ The below JSON is a sample IAM policy which restricts access to the devops ruleg
 }
 ```
 
-The below awscli interaction shows an example of an IAM user having restricted access to a rulegroupsnamespace specified through Resource ARN (i.e. devops rulegroupnamespace) in IAM policy and how the same user is denied access to other resources (i.e. engg rulegroupnamespace) not having access.
+以下 awscli 交互显示了 IAM 用户对通过 IAM 策略中指定的资源 ARN（即 `devops` `rulegroupnamespace`）具有受限访问权限的示例，以及同一用户如何被拒绝访问其他资源（即 `engg` `rulegroupnamespace`）。
 
-```
+```bash
 $ aws amp describe-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name devops
 {
     "ruleGroupsNamespace": {
@@ -279,7 +278,6 @@ $ aws amp describe-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93
         "tags": {}
     }
 }
-
 
 $ cat > devops.yaml <<EOF
 > groups:
@@ -303,9 +301,7 @@ $ cat > devops.yaml <<EOF
 >        severity: critical
 > EOF
 
-
 $ base64 devops.yaml > devops_b64.yaml
-
 
 $ aws amp put-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name devops --data file://devops_b64.yaml
 {
@@ -318,17 +314,19 @@ $ aws amp put-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xx
 }
 ```
 
-`$ aws amp describe-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name engg
-An error occurred (AccessDeniedException) when calling the DescribeRuleGroupsNamespace operation: User: arn:aws:iam::XXXXXXXXXXXX:user/amp_ws_user is not authorized to perform: aps:DescribeRuleGroupsNamespace on resource: arn:aws:aps:us-west-2:XXXXXXXXXXXX:rulegroupsnamespace/ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx/engg`
+```bash
+$ aws amp describe-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name engg
+An error occurred (AccessDeniedException) when calling the DescribeRuleGroupsNamespace operation: User: arn:aws:iam::XXXXXXXXXXXX:user/amp_ws_user is not authorized to perform: aps:DescribeRuleGroupsNamespace on resource: arn:aws:aps:us-west-2:XXXXXXXXXXXX:rulegroupsnamespace/ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx/engg
 
-`$ aws amp put-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name engg --data file://devops_b64.yaml
-An error occurred (AccessDeniedException) when calling the PutRuleGroupsNamespace operation: User: arn:aws:iam::XXXXXXXXXXXX:user/amp_ws_user is not authorized to perform: aps:PutRuleGroupsNamespace on resource: arn:aws:aps:us-west-2:XXXXXXXXXXXX:rulegroupsnamespace/ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx/engg`
+$ aws amp put-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name engg --data file://devops_b64.yaml
+An error occurred (AccessDeniedException) when calling the PutRuleGroupsNamespace operation: User: arn:aws:iam::XXXXXXXXXXXX:user/amp_ws_user is not authorized to perform: aps:PutRuleGroupsNamespace on resource: arn:aws:aps:us-west-2:XXXXXXXXXXXX:rulegroupsnamespace/ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx/engg
 
-`$ aws amp delete-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name engg
-An error occurred (AccessDeniedException) when calling the DeleteRuleGroupsNamespace operation: User: arn:aws:iam::XXXXXXXXXXXX:user/amp_ws_user is not authorized to perform: aps:DeleteRuleGroupsNamespace on resource: arn:aws:aps:us-west-2:XXXXXXXXXXXX:rulegroupsnamespace/ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx/engg`
+$ aws amp delete-rule-groups-namespace --workspace-id ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx --name engg
+An error occurred (AccessDeniedException) when calling the DeleteRuleGroupsNamespace operation: User: arn:aws:iam::XXXXXXXXXXXX:user/amp_ws_user is not authorized to perform: aps:DeleteRuleGroupsNamespace on resource: arn:aws:aps:us-west-2:XXXXXXXXXXXX:rulegroupsnamespace/ws-8da31ad6-f09d-44ff-93a3-xxxxxxxxxx/engg
+```
 
-The user permissions to use rules can also be restricted using an [IAM policy](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-IAM-permissions.html) (documentation sample).
+用户使用规则的权限也可以使用 [IAM 策略](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alertmanager-IAM-permissions.html)（文档示例）进行限制。
 
-For more information customers can read the [AWS Documentation](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html), go through the [AWS Observability Workshop](https://catalog.workshops.aws/observability/en-US/aws-managed-oss/amp/setup-alert-manager) on Amazon Managed Service for Prometheus Alert Manager.
+有关更多信息，客户可以阅读 [AWS 文档](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html)，并通过 [AWS 可观测性研讨会](https://catalog.workshops.aws/observability/en-US/aws-managed-oss/amp/setup-alert-manager) 了解 Amazon Managed Service for Prometheus 告警管理器。
 
-Additional Reference: [Amazon Managed Service for Prometheus Is Now Generally Available with Alert Manager and Ruler](https://aws.amazon.com/blogs/aws/amazon-managed-service-for-prometheus-is-now-generally-available-with-alert-manager-and-ruler/)
+更多参考：[Amazon Managed Service for Prometheus 现已正式推出告警管理器和 Ruler](https://aws.amazon.com/blogs/aws/amazon-managed-service-for-prometheus-is-now-generally-available-with-alert-manager-and-ruler/)

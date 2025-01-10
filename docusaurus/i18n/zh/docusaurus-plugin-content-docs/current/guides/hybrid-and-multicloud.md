@@ -1,97 +1,98 @@
-# Best practices for hybrid and multicloud
+# 混合云和多云的最佳实践
 
-## Intro
+## 简介
 
-We consider multicloud to be the concurrent use of more than one cloud services provider to operate your own workloads, and hybrid is the extending of your workloads across both on-premises and cloud environments. Observability across hybrid and multicloud environments may add significant complexity due to tool diversity, latency, and heterogenous workloads. Regardless, this remains a common goal for both development and business users. A rich ecosystem of products and services address this.
+我们认为多云是指同时使用多个云服务提供商来运行您的工作负载，而混合云则是将您的工作负载扩展到本地和云环境中。由于工具多样性、延迟和异构工作负载，跨混合云和多云环境的可观测性可能会增加显著的复杂性。尽管如此，这仍然是开发人员和业务用户的共同目标。丰富的产品和服务生态系统可以解决这一问题。
 
-However, the usefulness of observability tools for cloud-native workloads can vary dramatically. Consider the different requirements of monitoring a containerized batch processing workload, compared to a real-time banking application using a serverless framework: both have logs, metrics, and traces; however, the toolchain for observing them will vary, with a number of cloud-native, open source, and ISV products available. An open-source tool such as Prometheus may be an excellent fit for one, whereas a cloud-native tool provided as a managed service could better meet your requirements.
+然而，可观测性工具对于云原生工作负载的实用性可能会有很大差异。考虑监控一个容器化的批处理工作负载与使用无服务器框架的实时银行应用程序的不同需求：两者都有日志、指标和追踪；然而，观察它们的工具链会有所不同，有许多云原生、开源和独立软件供应商（ISV）产品可供选择。像 Prometheus 这样的开源工具可能非常适合其中一种情况，而作为托管服务提供的云原生工具可能更好地满足您的需求。
 
-Add to this the complexity of multicloud and hybrid, and gaining insights from your applications becomes considerably harder.
+再加上多云和混合云的复杂性，从应用程序中获得洞察变得更加困难。
 
-In order to deal with these added dimensions and facilitate approaches to observability, customers tend to invest in a single toolchain with a unified interface. After all, reducing the signal-to-noise ratio is usually a good thing! However, a single approach does not work for all use cases, and the operating models of various platforms may add confusion. Our goal is to help you make informed decisions that compliment your needs and reduce your mean time to remediation when issues do occur. Below are the best practices that we have learned through working with customers of all sizes, and across every industry.
-
-:::tip
-    These best practices are intended for a broad set of roles: enterprise architects, developers, DevOps, and more. We suggest evaluating them through the lens of your organization’s business needs, and how observability in distributed environments can provide as much value as possible.
-:::
-## Don’t let your tooling dictate your decisions
-
-Your applications, tools, and processes exist to help achieve business outcomes, such as increasing sales and customer satisfaction. A well-advised technology strategy is one that does everything possible to help you achieve those business goals. But the things that help you get there are simply tools, and they are meant to support your strategy – not be the strategy. To make an analogy, if you needed to build a house, you would not ask your tools how to design and build it. Rather, your tools are a means to an end.
-
-In a single, homogeneous environment, the decisions around tooling are easier. After all, if you run a single application in one environment, then you tooling can easily be the same across the board. But for hybrid and multicloud environments things are less clear, and keeping an eye on your business outcomes - and [the value added](https://arxiv.org/abs/2303.13402) by observing your workloads across these environments - is critical. Each Cloud Services Provider (CSP) has their own native observability solutions, and a rich set of partner and Independent Software Vendors (ISVs) whom you can use as well.
-
-Just because you operate in multiple environments does not mean that a single tool for every workload is advisable, nor even recommended. This can potentially mean using multiple services, frameworks, or providers, to observe your workloads. See "[a single pane of glass is less important than your workload’s context](#a-single-pane-of-glass-is-less-important-than-your-workloads-context)” below for details of how your operating model needs to reflect your needs. Regardless, when implementing your tools, remember to create “[two-way doors](https://aws.amazon.com/executive-insights/content/how-amazon-defines-and-operationalizes-a-day-1-culture/)” so you can evolve your observability solution in the future.
-
-Here are some examples of “tool-first” outcomes to avoid:
-
-1.	Focusing on implementation of a single tool without a two-way door to upgrade it, or move to a new solution in the future, may create technical debt that is otherwise avoidable. This can happen when the tool is the solution, and one day may become the problem you need to solve.
-2.	A company standard to use a single tool due to a volume discount may end-up without features they would benefit from. This may be “cost over quality”, and inadvertently creates a monolithic anti-pattern. This may discourage the collection of telemetry in order to remain under a volume threshold, thereby de-incentivizing the use of observability tooling.
-3.	Not collecting an entire type of telemetry (usually traces) due to a lack of existing trace collection infrastructure, but a rich set of log and metric collectors, can lead to an incomplete observability solution.
-4.	Support staff having been trained on only a single toolchain, in the desire to reduce labour and training costs, thereby reducing the potential value of other observability patterns.
-
-:::info
-    If your tooling is dictating your observability strategy, then you need to invert the approach. Tools are meant to enable and empower observability, not to limit your choices.
-:::
-
-:::info
-    Tool sprawl is a very real issue that companies struggle with, however a radical shift to a singular toolchain can likewise reduce your observability solution’s usefulness. Hybrid and multicloud workloads have technologies that are unique to each platform, and higher-level services from each CSP are useful – though the trade-offs in using a single-source product require a value-based analysis. See “[Invest in OpenTelemetry](#invest-in-opentelemetry)” for an approach that mitigates some of these risks.
-:::
-
-## (Observability) data has gravity
-
-All data has gravity – which is to say that it attracts workloads, solutions, tools, people, processes, and projects around it. For example, a database with your customer transactions in it will be the attractive force that brings compute and analytics workloads to it. This has direct implications for where you place your workloads, in which environment, and how you operate them going-forward. And the same is true for observability signals, though the gravity this data creates is tied to your workload and organizational context (see "[a single pane of glass is less important than your workload’s context](#a-single-pane-of-glass-is-less-important-than-your-workloads-context)”).
-
-One cannot completely separate the context of your observability telemetry from the underlying workload and data that it relates to. The same rule applies here: your telemetry is data, and it has gravity to it. This should influence where you place your telemetry agents, collectors, or systems that aggregate and analyze signals.
+为了应对这些增加的维度并促进可观测性方法，客户倾向于投资于具有统一界面的单一工具链。毕竟，降低信噪比通常是一件好事！然而，单一方法并不适用于所有用例，各种平台的操作模式可能会增加混淆。我们的目标是帮助您做出明智的决策，满足您的需求，并在问题发生时减少平均修复时间。以下是我们通过与各种规模和行业的客户合作所学到的最佳实践。
 
 :::tip
-    The value of observability data over time is considerably less than most other data types. You could call it the “half-life” of observability data. Consider the additional latency in relaying telemetry to another environment as a potential forced devaluation of this data prior to its potential use, and then weigh that against the requirements you have for alerting when issues occur.
+    这些最佳实践适用于广泛的角色：企业架构师、开发人员、DevOps 等。我们建议通过您组织的业务需求以及分布式环境中的可观测性如何提供尽可能多的价值的视角来评估它们。
+:::
+
+## 不要让工具决定您的决策
+
+您的应用程序、工具和流程的存在是为了帮助实现业务成果，例如增加销售额和客户满意度。一个明智的技术策略是尽一切可能帮助您实现这些业务目标。但帮助您实现这些目标的工具仅仅是工具，它们旨在支持您的策略——而不是成为策略本身。打个比方，如果您需要建造一座房子，您不会问您的工具如何设计和建造它。相反，您的工具是实现目标的手段。
+
+在单一的、同质的环境中，工具选择的决策更容易。毕竟，如果您在一个环境中运行一个应用程序，那么您的工具可以轻松地在整个环境中保持一致。但对于混合云和多云环境，情况就不那么清晰了，密切关注您的业务成果以及[通过观察这些环境中的工作负载增加的价值](https://arxiv.org/abs/2303.13402)至关重要。每个云服务提供商（CSP）都有自己的原生可观测性解决方案，以及丰富的合作伙伴和独立软件供应商（ISV）产品供您使用。
+
+仅仅因为您在多个环境中运行并不意味着为每个工作负载使用单一工具是可取的，甚至是不推荐的。这可能意味着使用多个服务、框架或提供商来观察您的工作负载。请参阅下面的“[单一仪表板不如您的工作负载上下文重要](#a-single-pane-of-glass-is-less-important-than-your-workloads-context)”以了解您的操作模式如何反映您的需求。无论如何，在实施工具时，请记住创建“[双向门](https://aws.amazon.com/executive-insights/content/how-amazon-defines-and-operationalizes-a-day-1-culture/)”，以便将来可以发展您的可观测性解决方案。
+
+以下是一些应避免的“工具优先”结果的示例：
+
+1. **专注于单一工具的实施而没有双向门来升级它或在未来迁移到新解决方案，可能会产生本可避免的技术债务。** 当工具成为解决方案时，某一天它可能会成为您需要解决的问题。
+2. **由于批量折扣而使用单一工具的公司标准可能会最终缺乏他们本可以从中受益的功能。** 这可能是“成本高于质量”，并且无意中创建了一个单体反模式。这可能会阻止收集遥测数据以保持在批量阈值以下，从而削弱使用可观测性工具的积极性。
+3. **由于缺乏现有的追踪收集基础设施而不收集整个类型的遥测数据（通常是追踪），但拥有丰富的日志和指标收集器，可能会导致不完整的可观测性解决方案。**
+4. **支持人员仅接受过单一工具链的培训，以减少劳动力和培训成本，从而降低了其他可观测性模式的潜在价值。**
+
+:::info
+    如果您的工具正在决定您的可观测性策略，那么您需要反转这种方法。工具旨在启用和增强可观测性，而不是限制您的选择。
 :::
 
 :::info
-    The best practice is to emit data between environments only when there is business value to be gained from this aggregation. Having a single source for querying data does not solve many business needs on its own, and may create a more expensive solution than desired, with more points of failure.
+    工具蔓延是公司面临的一个非常现实的问题，然而激进地转向单一工具链同样会降低您可观测性解决方案的实用性。混合云和多云工作负载具有每个平台独有的技术，每个 CSP 提供的高级服务是有用的——尽管使用单一来源产品的权衡需要进行基于价值的分析。请参阅“[投资 OpenTelemetry](#invest-in-opentelemetry)”以了解一种减轻这些风险的方法。
 :::
 
-## A single pane of glass is less important than your workload’s context
+## （可观测性）数据具有重力
 
-A common ask is for a “single pane of glass” to observe all of your workloads. This arises from a natural desire to view as much data as possible, but in as simple a way as can be achieved, and reduce churn, frustration, and diagnosis time. Creating this one interface to see your entire observability solution at once is useful, but can come with the trade-off of separating your telemetry from the context it came from.
+所有数据都具有重力——也就是说，它会吸引工作负载、解决方案、工具、人员、流程和项目围绕它。例如，包含客户交易的数据库将成为吸引计算和分析工作负载的引力。这对您将工作负载放置在哪个环境以及如何操作它们有直接影响。对于可观测性信号也是如此，尽管这些数据产生的重力与您的工作负载和组织上下文相关（请参阅“[单一仪表板不如您的工作负载上下文重要](#a-single-pane-of-glass-is-less-important-than-your-workloads-context)”）。
 
-For example, a dashboard with the CPU utilization of a hundred servers may show some anomalous spikes in consumption, but this does nothing to explain why this has happened, or what the contributing factors are for this behavior. And the importance of this metric may not be immediately clear.
+您不能完全将可观测性遥测的上下文与其相关的基础工作负载和数据分开。同样的规则适用于此：您的遥测是数据，它具有重力。这应该影响您放置遥测代理、收集器或聚合和分析信号的系统的位置。
 
-We have seen customers sometimes pursue the single pane of glass so aggressively that all business context is lost, and trying to see everything in one tool can actually dilute the value of that data. Your dashboards, and your tools, need to [tell a story](https://aws-observability.github.io/observability-best-practices/tools/dashboards/). And this story needs to include the business metrics and outcomes that are impacted by events in your workloads.
-
-Moreover, your tooling needs to align to your operating model. A single pane of glass can add value when your support teams are global with access to all of your environments, but if they are limited to only accessing a single workload, in a single CSP or hybrid environment, then there is no value added through this approach. In these instances, allowing teams to create dashboards within each environment natively may hasten time to value, and be more flexible changes in the future.
-
-:::info
-    The value of observability data is deeply integrated into the application from which it came. Your telemetry requires contextual awareness that comes from its environment. In hybrid and multicloud environments, the differences between technologies makes the need for context even greater (though systems such as Kubernetes can be similar between different cloud providers and on-premises).
+:::tip
+    可观测性数据随时间推移的价值远低于大多数其他数据类型。您可以称之为可观测性数据的“半衰期”。考虑将遥测数据中继到另一个环境的额外延迟作为数据在潜在使用之前的强制贬值，然后将其与您在问题发生时对告警的需求进行权衡。
 :::
 
 :::info
-    When building a single pane of glass for distributed system, display your business metrics and Service Level Objectives (SLOs) in the same view as other data (such as infrastructure metrics) that contributes to these SLOs. This gives context that may otherwise be lacking.
+    最佳实践是仅在从这种聚合中获得业务价值时在环境之间发出数据。拥有单一的数据查询源并不能解决许多业务需求，并且可能会创建一个比预期更昂贵的解决方案，同时增加故障点。
+:::
+
+## 单一仪表板不如您的工作负载上下文重要
+
+一个常见的需求是“单一仪表板”来观察所有工作负载。这源于一种自然的愿望，即尽可能多地查看数据，但以尽可能简单的方式实现，并减少流失、挫败感和诊断时间。创建这个单一界面来一次性查看整个可观测性解决方案是有用的，但可能会以将遥测数据与其来源的上下文分离为代价。
+
+例如，显示一百台服务器的 CPU 利用率的仪表板可能会显示一些异常的消耗峰值，但这并不能解释为什么会发生这种情况，或者导致这种行为的原因是什么。而且这个指标的重要性可能并不立即明显。
+
+我们见过一些客户有时过于激进地追求单一仪表板，以至于所有业务上下文都丢失了，试图在一个工具中查看所有内容实际上可能会稀释数据的价值。您的仪表板和工具需要[讲述一个故事](https://aws-observability.github.io/observability-best-practices/tools/dashboards/)。这个故事需要包括受工作负载中事件影响的业务指标和结果。
+
+此外，您的工具需要与您的操作模式保持一致。当您的支持团队是全球性的并且可以访问所有环境时，单一仪表板可以增加价值，但如果他们仅限于访问单个工作负载，在单个 CSP 或混合环境中，那么这种方法不会增加任何价值。在这些情况下，允许团队在每个环境中本地创建仪表板可能会加快价值实现时间，并且在未来更具灵活性。
+
+:::info
+    可观测性数据的价值深深嵌入到其来源的应用程序中。您的遥测需要来自其环境的上下文感知。在混合云和多云环境中，技术之间的差异使得对上下文的需求更大（尽管 Kubernetes 等系统在不同的云提供商和本地之间可能相似）。
+:::
+
+:::info
+    在为分布式系统构建单一仪表板时，将您的业务指标和服务级别目标（SLO）与其他数据（如基础设施指标）一起显示在同一视图中，这些数据有助于实现这些 SLO。这提供了可能缺乏的上下文。
 :::
 
 :::tip
-    A single pane of glass can help to rapidly diagnose issues and reduce Time to Detection (MTTD) and thereby Mean Time to Resolution (MTTR), but only if the meaning of telemetry data can be preserved. Without this, a single pane of glass approach can increase the time to value, or become a net-negative for operations teams.
+    单一仪表板可以帮助快速诊断问题并减少平均检测时间（MTTD），从而减少平均修复时间（MTTR），但前提是遥测数据的含义可以保留。如果没有这一点，单一仪表板方法可能会增加价值实现时间，或对运营团队产生负面影响。
 :::
 
 :::info
-    If the value of a single pane of glass cannot be determined, or if workloads are bound entirely to a single CSP or on-premises environment, consider only rolling-up top-level business metrics to a single pane of glass, leaving the raw metrics and other contributing factors in their original environments.
+    如果无法确定单一仪表板的价值，或者工作负载完全绑定到单个 CSP 或本地环境，请考虑仅将顶级业务指标汇总到单一仪表板，将原始指标和其他影响因素保留在其原始环境中。
 :::
 
-## Invest in OpenTelemetry
+## 投资 OpenTelemetry
 
-Across the observability vendor landscape, OpenTelemetry (OTel) has become the de-facto standard. OTEL can marshal each of your telemetry types into one or many collectors, which can include cloud-native services, or a wide variety of SaaS and ISV products. OTel agents and collectors communicate using the OpenTelemetry Protocol (OTLP), which encapsulates signals into a format allowing a wide variety of deployment patterns.
+在可观测性供应商生态系统中，OpenTelemetry（OTel）已成为事实上的标准。OTel 可以将您的每种遥测类型编组到一个或多个收集器中，这些收集器可以包括云原生服务或各种 SaaS 和 ISV 产品。OTel 代理和收集器使用 OpenTelemetry 协议（OTLP）进行通信，该协议将信号封装为一种格式，允许各种部署模式。
 
-To collect transaction traces with the most value, and with your business and infrastructure context, you will need to integrate trace collection into your application. Some auto-instrumentation agents can perform this with almost no effort. However, the most sophisticated use cases do require code changes on your behalf to support transaction traces. This creates some technical debt and ties-down your workload to a particular technology.
+要收集具有最大价值的交易追踪，并包含您的业务和基础设施上下文，您需要将追踪收集集成到您的应用程序中。一些自动检测代理可以几乎不费力地执行此操作。然而，最复杂的用例确实需要您进行代码更改以支持交易追踪。这会产生一些技术债务，并将您的工作负载绑定到特定技术。
 
-OTel captures logs, metrics, and traces using a concept of a span. Spans contain these signals grouped together from a single transaction, packaging them into a contextualized, searchable object. This means you can view your signals from a single application event in one simple entity. For example, a user logging into a web site, and the requests this creates to all the downstream services this integrates with, can be presented as a single span.
+OTel 使用跨度（span）的概念捕获日志、指标和追踪。跨度包含从单个交易中分组在一起的这些信号，将它们打包成一个上下文化的、可搜索的对象。这意味着您可以查看来自单个应用程序事件的信号在一个简单的实体中。例如，用户登录网站以及由此产生的对所有下游服务的请求可以作为一个跨度呈现。
 
 :::tip
-    OTel is not limited to application traces, and is widely used for logs and metrics. And many [ISV products accept OTLP directly today](https://opentelemetry.io/ecosystem/vendors/).
+    OTel 不仅限于应用程序追踪，还广泛用于日志和指标。许多[ISV 产品今天直接接受 OTLP](https://opentelemetry.io/ecosystem/vendors/)。
 :::
 
 :::info
-    By instrumenting your applications using OTel, you remove the need to replace this instrumentation at the application layer in the future, should you choose to move from one observability platform to another. This turns part of your observability solution into a [two-way door](https://aws.amazon.com/executive-insights/content/how-amazon-defines-and-operationalizes-a-day-1-culture/).
+    通过使用 OTel 检测您的应用程序，您消除了在未来从一种可观测性平台迁移到另一种平台时在应用程序层替换此检测的需求。这将您的可观测性解决方案的一部分变成了[双向门](https://aws.amazon.com/executive-insights/content/how-amazon-defines-and-operationalizes-a-day-1-culture/)。
 :::
 
 :::info
-    OTel is future-proofing, scalable, and makes it easier to change your collection and analysis systems in the future without having to change application code, making it an efficient [shift to the left](https://www.youtube.com/watch?v=99r7cxKW8Rg).
-:::    
+    OTel 是面向未来的、可扩展的，并且使将来更容易更改您的收集和分析系统，而无需更改应用程序代码，使其成为高效的[左移](https://www.youtube.com/watch?v=99r7cxKW8Rg)。
+:::

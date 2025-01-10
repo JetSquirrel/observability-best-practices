@@ -1,85 +1,84 @@
-# OLA for Existing EC2 Workloads
+# OLA 适用于现有 EC2 工作负载
 
-## AWS OLA program
+## AWS OLA 计划
 
-[AWS Optimization and Licensing Assessment (AWS OLA)](https://aws.amazon.com/optimization-and-licensing-assessment/) provides customers the best approach to migrate workloads to cloud and cost optimize resources. This is a complimentary program that is intended to help customers analyze both their new and existing workloads, assess their on-premises & cloud environments to optimize resource allocation, third-party licensing and application dependencies and hence enhance resource efficiency and potentially save on compute spending.
+[AWS Optimization and Licensing Assessment (AWS OLA)](https://aws.amazon.com/optimization-and-licensing-assessment/) 为客户提供将工作负载迁移到云并对资源进行成本优化的最佳方法。该免费项目旨在帮助客户分析新的和现有的工作负载，评估其本地和云环境以优化资源分配、第三方许可和应用程序依赖关系，从而提高资源效率并可能在计算成本上节省开支。
 
-Through the data gathered in this process, the AWS OLA program delivers a comprehensive report that the customers can use to make informed decisions for their cloud journey & migration. The report models deployment options based on actual resource use, existing licensing entitlements and helping customers uncover potential cost savings through our flexible licensing options.
+通过在此过程中收集的数据，AWS OLA 计划会生成一份综合报告，帮助客户基于实际资源使用情况、现有许可证权益以及灵活的许可选项，做出明智的上云和迁移决策，并发掘潜在的成本节省。
 
-Benefits of undergoing the AWS OLA program includes,
+参与 AWS OLA 计划的好处包括：
 
-- **Rightsize resources allocation** for your workloads with a tool-based discovery approach which offers insights into compute resources and helps identifying the best Amazon Elastic Compute Cloud (Amazon EC2), Amazon Relational Database Service (Amazon RDS), or VMware Cloud on AWS instance size and type for each workload.
-- **Reduce costs** by optimizing your cloud infrastructure which is one of the key aspects.
-- Model licensing scenarios, including license-included or BYOL instances, for flexibility in managing seasonal workloads and agile experimentation to **explore optimized licensing options** and hence eliminate unnecessary licensing costs.
+- 使用工具驱动的发现方法，获得计算资源的深入洞察，从而为工作负载**合理分配资源**，并帮助选出最适合的 Amazon Elastic Compute Cloud (Amazon EC2)、Amazon Relational Database Service (Amazon RDS) 或 VMware Cloud on AWS 实例大小类型。
+- 通过优化云基础设施实现**降低成本**，这是关键目标之一。
+- 模拟不同的许可场景，包括内置许可或自带许可实例，为灵活管理季节性工作负载和快速实验提供支持，从而**探索优化的许可选项**并降低不必要的许可成本。
 
 ![OLA](../../images/OLA.png)
 
-## AWS OLA for EEC2 Workloads
+## AWS OLA 适用于 EEC2 工作负载
 
-The AWS OLA (Optimization and Licensing Assessment) is focused on optimizing costs for existing EC2 workloads called ‘**AWS OLA for EEC2**’ - AWS OLA (Optimization and Licensing Assessment) for **Existing EC2 Workloads** assessment.
+AWS OLA（优化和许可评估）聚焦于为现有 EC2 工作负载提供成本优化，被称为“**AWS OLA for EEC2**”——即面向**现有 EC2 工作负载**的优化和许可评估。
 
-The AWS OLA for EEC2 leverages [AWS Compute Optimizer](https://aws.amazon.com/compute-optimizer/) to provide Amazon EC2 rightsizing recommendations for customers enrolled in [AWS Enterprise Support](https://aws.amazon.com/premiumsupport/plans/enterprise/) plan. The OLA for EEC2 is a self-service engagement through a streamlined process, in which the AWS OLA team prepares the recommendations as an assessment report and the respective AWS account team presents those findings to the customer for Amazon EC2 rightsizing & cost optimization. In addition to the Amazon EC2 rightsizing recommendations, the AWS OLA also delivers Microsoft SQL Server optimization strategies for BYOL (Bring Your Own License) and License Included Microsoft SQL Server instances. The OLA for EEC2 surfaces supplemental strategies to Amazon EC2 rightsizing that reduce Microsoft SQL Server spend by 1) optimizing CPU configurations on Microsoft SQL Server on EC2 instances with lower CPU recommendation and 2) downgrading non-production servers running licensable SQL editions (Enterprise/Standard) to free SQL Developer edition.
+AWS OLA for EEC2 利用 [AWS Compute Optimizer](https://aws.amazon.com/compute-optimizer/) 为已注册 [AWS 企业支持](https://aws.amazon.com/premiumsupport/plans/enterprise/)计划的客户提供 EC2 规格调整建议。该过程是一种自助式体验：AWS OLA 团队将为客户准备优化报告，AWS 帐户团队再向客户展示这些方案，用于优化 EC2 规格和成本。此外，AWS OLA 还可以提供针对 Microsoft SQL Server 的优化策略，包括在 BYOL（自带许可）和内置许可实例上运行的 Microsoft SQL Server。该评估还会提出一些辅助策略来减少 Microsoft SQL Server 成本：1）对 SQL Server on EC2 实例采用更低的 CPU 配置 2）将非生产服务器上运行的收费 SQL 版本 (Enterprise/Standard) 降级为免费 SQL Developer 版本。
 
-To perform an assessment, the AWS OLA for EEC2 process collects environment parameters from the customer’s AWS accounts, including metrics like memory and CPU utilization (through Amazon CloudWatch and CloudWatch agent). Once the required parameters are collected, the AWS OLA team prepares the recommendations using the aggregated data and presents a PPT deck and Excel report to the AWS TAMs and account team which can later be presented to customers. The insights provided by the report help customers optimize their existing Amazon EC2 spend, and explore licensing optimization strategies for their workloads.
+通过收集客户 AWS 帐号的环境参数（包括从 Amazon CloudWatch 和 CloudWatch Agent 获取的内存和 CPU 利用率指标），AWS OLA 团队会将汇总数据整理并生成推荐方案，以 PPT 和 Excel 报告形式提供给 AWS TAM 和客户团队，之后可向客户展示。评估报告帮助客户优化现有 EC2 成本，并发现工作负载的许可优化策略。
 
-## AWS OLA for EEC2 assessment
+## AWS OLA for EEC2 评估
 
-Any AWS customer carrying Enterprise Support can optimize their existing Amazon EC2 Instances (Linux and Windows) costs with a complimentary Optimization and Licensing Assessment (OLA) for Existing EC2 workloads. To have an AWS OLA for EEC2 assessment performed for your workloads at no cost to you, please contact your AWS account team.
+任何拥有企业支持的 AWS 客户都可使用免费提供的 EC2 工作负载 OLA 评估来优化现有 Amazon EC2 实例（Linux 和 Windows）的成本。若有需要，请联系您的 AWS 帐户团队以执行该评估。
 
-## Amazon CloudWatch memory metrics for accurate rightsizing
+## 使用 Amazon CloudWatch 内存指标进行更精准的规格调整
 
-While the AWS OLA for EEC2 offers an assessment report for Amazon EC2 rightsizing, the insights provided by [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) comprehends the value of incorporating memory utilization metrics for more accurate rightsizing of resources for customers. Hence by encouraging and facilitating Amazon CloudWatch memory metrics monitoring along with the AWS OLA for EEC2 program, customers get more impactful resource optimization recommendations for their AWS environments and also obtain a broader perspective of their workload resource consumption. This helps you reduce the cost and improve the performance of your workloads.
+AWS OLA for EEC2 会提供 EC2 规格调整报告，而 [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) 提供的内存利用率指标能进一步提升规格调整的精准度。通过在 OLA 过程中鼓励并收集 EC2 内存指标，客户可获得更具影响力的资源优化建议，并深入了解各自工作负载的资源使用情况。这有助于在保证系统性能的同时控制成本。
 
-Amazon EC2 Instances emit several metrics to Amazon CloudWatch by default. However, memory metrics isn’t one of the default metrics provided by Amazon EC2. Getting to know the memory metrics of Amazon EC2 helps understand the current memory utilization of your EC2 instances, so that the instances are neither under-provisioned nor over-provisioned. Under-provisioning of Amazon EC2 instances typically impairs the performance of the system or application, while over provisioning yields in wasteful expenditure. Memory heavy applications like Big Data Analytics, In-memory Databases, Real-time Streaming require you to monitor memory utilization on the instances for operational visibility.
+默认情况下，Amazon EC2 实例会向 CloudWatch 发送多种指标，但并不包含内存利用率指标。通过查看 EC2 的内存利用率指标，可以避免实例配置过低影响性能，或因过度配置造成浪费。对于内存占用高的应用（如大数据分析、内存数据库、实时流式处理），监控 EC2 内存利用率尤为重要。
 
 ![CloudWatch Agent](../../images/cw-agent.png)
 
-### Memory metrics collection from Amazon EC2 Instances
+### 从 EC2 实例收集内存指标
 
-To collect memory metrics from [Amazon EC2 Instances](https://aws.amazon.com/ec2/), here are the steps at a high level.
+以下是采集 EC2 实例内存指标的主要操作步骤：
 
-- Create a role in AWS Identity and Access Management (IAM) with permissions for
-  - [Amazon Systems Manager](https://aws.amazon.com/systems-manager/) to manage Amazon EC2 instances, required if the Amazon EC2 Instance(s) are managed by Systems Manager. The [AWS Systems Manager Agent (SSM Agent)](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) is required on Amazon EC2 instances to allow the instance to communicate with the AWS Systems Manager and enable remote commands and scripts to be executed against the instance, like running Systems Manager Run Command on EC2 Instances on your behalf. AWS Systems Manager Agent (SSM Agent) is an Amazon software that is installed and run on the Amazon EC2 instances, which makes it possible for Amazon Systems Manager service to update, manage, and configure EC2 Instances as managed instances. The SSM agent receives requests from the Systems Manager service, processes them and sends status and execution information back to the Systems Manager service. Please note that, AWS Systems Manager Agent (SSM Agent) is [preinstalled on some Amazon Machine Images (AMIs)](https://docs.aws.amazon.com/systems-manager/latest/userguide/ami-preinstalled-agent.html) provided by AWS by default.
-  - If the CloudWatch agent wizard is used to generate the CloudWatch agent configuration file, optionally the Systems Manager Parameter Store can be used as secure common location to store the configuration file for futher retrieval. Then the CloudWatch Agent need to have to write-access to [Systems Manager Parameter Store](https://aws.amazon.com/systems-manager/features/#Parameter_Store) to write the configuration file & read-access to read the configuration file.
-  - [CloudWatch agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) to write data (metrics & logs) to Amazon CloudWatch
-- Launch Amazon EC2 Instance(s) and assign the IAM role created in the earlier step. For this IAM role, please refer to the Appendix [1] below for Trust Policy and Appendix [2] for Amazon Managed Policies - AmazonSSMManagedInstanceCore, CloudWatchAgentAdminPolicy and CloudWatchAgentServerPolicy (including permissions in JSON format) that be used.
-- Install CloudWatch agent on the required EC2 instance(s) (Windows or Linux) either [manually](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/installing-cloudwatch-agent-commandline.html) or using [Systems Manager Run Command](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/installing-cloudwatch-agent-ssm.html).
-- Configure CloudWatch agent to collect memory metrics and write to Amazon CloudWatch.
+- 在 AWS Identity and Access Management (IAM) 中创建角色，授予以下权限：
+  - [Amazon Systems Manager](https://aws.amazon.com/systems-manager/) 管理 EC2 实例，如果想用 Systems Manager 管理这些实例，需要安装 [AWS Systems Manager Agent (SSM Agent)](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html)，支持远程执行命令。
+  - 使用 CloudWatch Agent 配置向 [Systems Manager Parameter Store](https://aws.amazon.com/systems-manager/features/#Parameter_Store) 读写配置文件（可选）。
+  - 允许 [CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) 将数据（指标和日志）写入 Amazon CloudWatch。
+- 启动 EC2 实例并分配上述 IAM 角色。参考附录 [1] 中的信任策略，以及附录 [2] 中的 AmazonSSMManagedInstanceCore、CloudWatchAgentAdminPolicy 和 CloudWatchAgentServerPolicy（含 JSON 权限）。
+- 为需要的 EC2 实例（Windows 或 Linux）[安装 CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/installing-cloudwatch-agent-commandline.html)，可手动操作或使用 [Systems Manager Run Command](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/installing-cloudwatch-agent-ssm.html)。
+- 配置 CloudWatch Agent 采集内存指标并写入 Amazon CloudWatch。
 
 ![CloudWatch Metrics](../../images/cw-metrics.png)
 
-- View collected [metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/viewing_metrics_with_cloudwatch.html) and [logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html) in the CloudWatch console.
-- Use CloudWatch Logs Insights to analyze log data
+- 在 CloudWatch 控制台中查看 [指标](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/viewing_metrics_with_cloudwatch.html)和[日志](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html)。
+- 使用 CloudWatch Logs Insights 分析日志数据。
 
 ![CloudWatch Metrics](../../images/ec2-cloudwatch-metrics.png)
 
-### Memory metrics collection from Amazon EC2 Instances at scale
+### 在大规模 EC2 实例中收集内存指标
 
-The below steps can be followed to install and configure CloudWatch agent for signal collection (metrics and logs) to Amazon CloudWatch on one or more Amazon EC2 Instances.
+若要在多个 EC2 实例上安装并配置 CloudWatch Agent 以向 CloudWatch 发送指标与日志，可执行以下步骤：
 
-- Connect to the Amazon EC2 Instance (Windows or Linux) using Remote Desktop or SSH, required once to prepare the CloudWatch agent configuration file.
-- Run through the CloudWatch Agent Configuration Wizard to set up metrics and logs collection
-  - Configure host metrics like CPU, memory, disks
-  - Optionally add custom log files to monitor (e.g., IIS logs, Apache logs)
-  - Optionally monitor Windows Event logs
-  - Store the configuration in Systems Manager Parameter Store, if the same configuration can be applied to more Amazon EC2 Instances.
-- Apply the CloudWatch Agent configuration to other EC2 Instances using Systems Manager Run Command. [AmazonCloudWatch-ManageAgent](https://docs.aws.amazon.com/prescriptive-guidance/latest/implementing-logging-monitoring-cloudwatch/create-store-cloudwatch-configurations.html#store-cloudwatch-configuration-s3) Systems Manager Command document can be used to update the CloudWatch configuration on multiple EC2 instances in a single run.
+- 连接到任意 EC2 实例（Windows 或 Linux），运行一次 CloudWatch Agent 配置向导以生成监控配置文件：
+  - 配置 CPU、内存、磁盘等常见主机指标。
+  - 如需监控自定义日志文件（如 IIS 日志、Apache 日志），可进行配置。
+  - 如需监控 Windows 事件日志，也可进行配置。
+  - 若多台实例需要相同配置，可将该配置文件保存在 Systems Manager Parameter Store 中。
+- 使用 Systems Manager Run Command 将 CloudWatch Agent 配置应用到其他实例。可使用 [AmazonCloudWatch-ManageAgent](https://docs.aws.amazon.com/prescriptive-guidance/latest/implementing-logging-monitoring-cloudwatch/create-store-cloudwatch-configurations.html#store-cloudwatch-configuration-s3) 系统管理命令文档，一次性更新多台实例的 CloudWatch 配置。
 
-### Automation of memory metrics collection from Amazon EC2 Instances
+### 自动化从 EC2 实例采集内存指标
 
-The below steps can be followed to automate, orchestrate and manage at scale the signal collection (metrics and logs) to Amazon CloudWatch. [AWS CloudFormation](https://aws.amazon.com/cloudformation/) template can be used to perform following actions
+若要在大规模环境中自动化并编排监控数据的采集（指标和日志），可使用 [AWS CloudFormation](https://aws.amazon.com/cloudformation/) 完成以下操作：
 
-- Create an IAM execution role that allows Systems Manager automation to execute runbooks on Amazon EC2 Instances on your behalf.
-- Setup IAM role with permissions for CloudWatch agent to write data (metrics & logs) to Amazon CloudWatch
-- Build a [custom runbook](https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html) to install and configure CloudWatch agent on Amazon EC2 Instances. Please refer to Appendix [3] below, an example custom runbook document that can be used to install CloudWatch Agent and configure CloudWatch Agent either with the default metrics or with a parameter in Amazon Systems Manager Parameter Store
-- Upload a CloudWatch agent configuration file to systems manager parameter store.
+- 创建允许 Systems Manager 自动化在 EC2 上执行 runbook 的 IAM 执行角色。
+- 设置 IAM 角色，使 CloudWatch Agent 获得写入 CloudWatch 的权限。
+- 编写自定义的 [Systems Manager Runbook](https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html)，以在 EC2 实例上安装并配置 CloudWatch Agent。可参考附录 [3]，其中展示了一个示例 runbook，用于安装 CloudWatch Agent 并根据默认或 Systems Manager Parameter Store 参数配置 CloudWatch Agent。
+- 将 CloudWatch Agent 配置文件上传到 Systems Manager Parameter Store。
 
-### References
+### 参考资料
 
 - [Collect Metrics and Logs from Amazon EC2 instances with the CloudWatch Agent](https://www.youtube.com/watch?v=vAnIhIwE5hY)
 - [Setup memory metrics for Amazon EC2 instances using AWS Systems Manager](https://aws.amazon.com/blogs/mt/setup-memory-metrics-for-amazon-ec2-instances-using-aws-systems-manager/)
 
-### Appendices
+### 附录
 
 [1] **Trust Policy** for Amazon EC2 to assume the role
 

@@ -1,52 +1,51 @@
-# Collecting system metrics with Container Insights
-System metrics pertain to low-level resources that include physical components on a server such as CPU, memory, disks and network interfaces. 
-Use [CloudWatch Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html) to collect, aggregate, and summarize system metrics from containerized applications deployed to Amazon ECS. Container Insights also provides diagnostic information, such as container restart failures, to help isolate issues and resolve them quickly. It is available for Amazon ECS clusters deployed on EC2 and Fargate. 
+# 使用Container Insights收集系统指标
+系统指标涉及低级别的资源，包括服务器上的物理组件，如CPU、内存、磁盘和网络接口。使用[CloudWatch Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html)来收集、汇总和总结部署到Amazon ECS的容器化应用程序的系统指标。Container Insights还提供诊断信息，如容器重启失败，以帮助隔离问题并快速解决。它适用于部署在EC2和Fargate上的Amazon ECS集群。
 
-Container Insights collects data as performance log events using [embedded metric format](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html). These performance log events are entries that use a structured JSON schema that enables high-cardinality data to be ingested and stored at scale. From this data, CloudWatch creates aggregated metrics at the cluster, node, service and task level as CloudWatch metrics. 
+Container Insights使用[嵌入式指标格式](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html)收集数据作为性能日志事件。这些性能日志事件是使用结构化JSON模式的条目，使得高基数数据能够大规模地摄取和存储。CloudWatch从这些数据中创建集群、节点、服务和任务级别的聚合指标作为CloudWatch指标。
 
 :::note
-	For Container Insights metrics to appear in CloudWatch, you must enable Container Insights on your Amazon ECS clusters. This can be done either at the account level or at the individual cluster level. To enable at the account level, use the following AWS CLI command:
+	要使Container Insights指标出现在CloudWatch中，您必须在您的Amazon ECS集群上启用Container Insights。这可以在账户级别或单个集群级别完成。要在账户级别启用，请使用以下AWS CLI命令：
 
     ```
     aws ecs put-account-setting --name "containerInsights" --value "enabled
     ```
 
-    To enable at the individual cluster level, use the following AWS CLI command:
+    要在单个集群级别启用，请使用以下AWS CLI命令：
 
     ```
     aws ecs update-cluster-settings --cluster $CLUSTER_NAME --settings name=containerInsights,value=enabled
     ```
 :::
 
-## Collecting cluster-level and service-level metrics
-By default, CloudWatch Container Insights collects metrics at the task, service and cluster level. The Amazon ECS agent collects these metrics for each task on an EC2 container instance (for both ECS on EC2 and ECS on Fargate) and sends them to CloudWatch as performance log events. You don't need to deploy any agents to the cluster. These log events from which the metrics are extracted are collected under the CloudWatch log group named */aws/ecs/containerinsights/$CLUSTER_NAME/performance*. The complete list of metrics extracted from these events are [documented here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics-ECS.html). The metrics that Container Insights collects are readily viewable in pre-built dashboards available in the CloudWatch console by selcting *Container Insights* from the navigation page and then selecting *performance monitoring* from the dropdown list. They are also viewable in the *Metrics* section of the CloudWatch console.
+## 收集集群级别和服务级别的指标
+默认情况下，CloudWatch Container Insights收集任务、服务和集群级别的指标。Amazon ECS代理为EC2容器实例上的每个任务收集这些指标（适用于EC2上的ECS和Fargate上的ECS），并将它们作为性能日志事件发送到CloudWatch。您不需要在集群上部署任何代理。从中提取指标的这些日志事件被收集在名为*/aws/ecs/containerinsights/$CLUSTER_NAME/performance*的CloudWatch日志组下。从这些事件中提取的完整指标列表[在此处记录](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics-ECS.html)。Container Insights收集的指标可以在CloudWatch控制台中的预构建仪表板中轻松查看，通过从导航页面选择*Container Insights*，然后从下拉列表中选择*性能监控*。它们也可以在CloudWatch控制台的*指标*部分查看。
 
-![Container Insights metrics dashboard](../../../../images/ContainerInsightsMetrics.png)
+![Container Insights指标仪表板](../../../../images/ContainerInsightsMetrics.png)
 
 :::note
-    If you're using Amazon ECS on an Amazon EC2 instance, and you want to collect network and storage metrics from Container Insights, launch that instance using an AMI that includes Amazon ECS agent version 1.29.
+    如果您在Amazon EC2实例上使用Amazon ECS，并且希望从Container Insights收集网络和存储指标，请使用包含Amazon ECS代理版本1.29的AMI启动该实例。
 :::
 
 :::warning
-    Metrics collected by Container Insights are charged as custom metrics. For more information about CloudWatch pricing, see [Amazon CloudWatch Pricing](https://aws.amazon.com/cloudwatch/pricing/)
+    Container Insights收集的指标作为自定义指标收费。有关CloudWatch定价的更多信息，请参见[Amazon CloudWatch定价](https://aws.amazon.com/cloudwatch/pricing/)
 :::
 
-## Collecting instance-level metrics
-Deploying the CloudWatch agent to an Amazon ECS cluster hosted on EC2, allows you to collect instance-level metrics from the cluster. The agent is deployed as a daemon service and sends instance-level metrics as performance log events from each EC2 container instance in the cluster. The complete list of instance-level extracted from these events are [documented here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics-ECS.html)
+## 收集实例级别的指标
+将CloudWatch代理部署到托管在EC2上的Amazon ECS集群，允许您从集群中收集实例级别的指标。该代理作为守护进程服务部署，并从集群中的每个EC2容器实例发送实例级别的指标作为性能日志事件。从这些事件中提取的实例级别指标的完整列表[在此处记录](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics-ECS.html)
 
 :::info
-    Steps to deploy the CloudWatch agent to an Amazon ECS cluster to collect instance-level metrics are documented in the [Amazon CloudWatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/deploy-container-insights-ECS-instancelevel.html). Note that this option is not availavble for Amazon ECS clusters that are hosted on Fargate.
+    将CloudWatch代理部署到Amazon ECS集群以收集实例级别指标的步骤记录在[Amazon CloudWatch用户指南](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/deploy-container-insights-ECS-instancelevel.html)中。请注意，此选项不适用于托管在Fargate上的Amazon ECS集群。
 :::
     
-## Analyzing performance log events with Logs Insights
-Container Insights collects metrics by using performance log events with embedded metric format. Each log event may contain performance data observed on system resources such as CPU and memory or ECS resources such as tasks and services. Examples of performance log events that Container Insights collects from an Amazon ECS at the cluster, service, task and container level are [listed here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-reference-performance-logs-ECS.html). CloudWatch generates metrics based only on some of the performance data in these log events. But you can use these log events to perform a deeper analysis of the performance data using CloudWatch Logs Insights queries.
+## 使用Logs Insights分析性能日志事件
+Container Insights通过使用嵌入式指标格式的性能日志事件收集指标。每个日志事件可能包含在系统资源（如CPU和内存）或ECS资源（如任务和服务）上观察到的性能数据。Container Insights从Amazon ECS在集群、服务、任务和容器级别收集的性能日志事件的示例[在此处列出](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-reference-performance-logs-ECS.html)。CloudWatch仅基于这些日志事件中的部分性能数据生成指标。但您可以使用这些日志事件通过CloudWatch Logs Insights查询对性能数据进行更深入的分析。
 
-The user interface to run Logs Insights queries is available in the CloudWatch console by selecting *Logs Insights* from the navigation page. When you select a log group, CloudWatch Logs Insights automatically detects fields in the performance log events in the log group and displays them in *Discovered* fields in the right pane. The results of a query execution are displayed as a bar graph of log events in this log group over time. This bar graph shows the distribution of events in the log group that matches your query and time range.
+运行Logs Insights查询的用户界面在CloudWatch控制台中通过从导航页面选择*Logs Insights*可用。当您选择一个日志组时，CloudWatch Logs Insights会自动检测日志组中性能日志事件的字段，并在右侧窗格中的*已发现*字段中显示它们。查询执行的结果显示为该日志组中日志事件随时间的条形图。此条形图显示了与您的查询和时间范围匹配的日志组中事件的分布。
 
-![Logs Insights dashboard](../../../../images/LogInsights.png)
+![Logs Insights仪表板](../../../../images/LogInsights.png)
 
 :::info
-    Here's a sample Logs Insights query to display container-level metrics for CPU and memory usage.
+    这是一个示例Logs Insights查询，用于显示CPU和内存使用情况的容器级别指标。
     
     ```
     stats avg(CpuUtilized) as CPU, avg(MemoryUtilized) as Mem by TaskId, ContainerName | sort Mem, CPU desc

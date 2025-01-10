@@ -1,44 +1,45 @@
-# AWS Observability services and Cost
+# AWS 可观测性服务和成本
 
-As you invest in your Observability stack, it’s important that you monitor the **cost** of your observability products on a regular basis. This allows you to ensure that you are only incurring the costs you need and that you are not overspending on resources you don't need.
+在投资可观测性技术栈时，定期监控可观测性产品的**成本**非常重要。这可以确保您只产生必要的成本，并且不会在不需要的资源上过度支出。
 
-## AWS Tools for Cost Optimization
+## AWS 成本优化工具
 
-Most organizations’ core focus lies on scaling their IT infrastructure on cloud, and usually are uncontrolled, unprepared, and unaware of their actual or forthcoming cloud spend. To help you track, report, and analyze costs over time, AWS provides several cost-optimization tools:
+大多数组织的核心重点都在于扩展其云上的 IT 基础设施，通常是不受控制、未做准备且不了解其实际或即将发生的云支出。为了帮助您跟踪、报告和分析成本随时间的变化，AWS 提供了几个成本优化工具：
 
-[AWS Cost Explorer][cost-explorer] – See patterns in AWS spending over time, project future costs, identify areas that need further inquiry, observe Reserved Instance utilization, observe Reserved Instance coverage, and receive Reserved Instance recommendations.
+[AWS Cost Explorer][cost-explorer] – 查看 AWS 支出随时间的变化模式，预测未来成本，识别需要进一步调查的领域，观察预留实例使用情况，观察预留实例覆盖范围，并接收预留实例推荐。
 
-[AWS Cost and Usage Report(CUR)][CUR]– Granular raw data files detailing your hourly AWS usage across accounts used for Do-It-Yourself (DIY) analysis. The AWS Cost and Usage Report has dynamic columns that populate depending on the services you use.
+[AWS 成本和使用报告(CUR)][CUR] – 详细记录跨账户每小时 AWS 使用情况的原始数据文件，用于自主分析。AWS 成本和使用报告具有动态列，这些列会根据您使用的服务进行填充。
 
-## Architecture overview: Visualizing AWS Cost and Usage Report
+## 架构概述：可视化 AWS 成本和使用报告
 
-You can build AWS cost and usage dashboards in Amazon Managed Grafana or Amazon QuickSight. The following architecture diagram illustrates both the solutions.
+您可以在 Amazon Managed Grafana 或 Amazon QuickSight 中构建 AWS 成本和使用情况仪表板。以下架构图说明了这两种解决方案。
 
-![Architecture diagram](../../../images/cur-architecture.png)
-*Architecture diagram*
+![架构图](../../../images/cur-architecture.png)
+*架构图*
 
-## Cloud Intelligence Dashboards
+## Cloud Intelligence 仪表板
 
-The [Cloud Intelligence Dashboards][cid] are a collection of [Amazon QuickSight][quicksight] dashboards built on top of AWS Cost and Usage report (CUR). These dashboards work as your own cost management and optimization (FinOps) tool. You get in-depth, granular, and recommendation-driven dashboards that can help you get a detailed view of your AWS usage and costs.
+[Cloud Intelligence 仪表板][cid]是建立在 AWS 成本和使用报告(CUR)之上的一系列 [Amazon QuickSight][quicksight] 仪表板。这些仪表板可作为您自己的成本管理和优化(FinOps)工具。您可以获得深入、细致且基于推荐的仪表板，帮助您详细了解 AWS 的使用情况和成本。
 
-### Implementation
+### 实施
 
-1.	Create a [CUR report][cur-report] with [Amazon Athena][amazon-athnea] integration enabled.  
-*During the initial configuration, it can take up to 24 hours for AWS to start delivering reports to your Amazon S3 bucket. Reports are delivered once a day. To streamline and automate integration of your Cost and Usage Reports with Athena, AWS provides an AWS CloudFormation template with several key resources along with the reports that you set up for Athena integration.*
+1. 创建启用了 [Amazon Athena][amazon-athnea] 集成的 [CUR 报告][cur-report]。  
+*在初始配置期间，AWS 最多需要 24 小时才能开始向您的 Amazon S3 存储桶传送报告。报告每天传送一次。为了简化和自动化成本和使用报告与 Athena 的集成，AWS 提供了一个 AWS CloudFormation 模板，其中包含几个关键资源以及为 Athena 集成设置的报告。*
 
-2.	Deploy the [AWS CloudFormation template][cloudformation].  
-*This template includes an AWS Glue crawler, an AWS Glue database, and an AWS Lambda event. At this point, CUR data is made available through tables in Amazon Athena for you to query.*  
+2. 部署 [AWS CloudFormation 模板][cloudformation]。  
+*此模板包括 AWS Glue 爬虫、AWS Glue 数据库和 AWS Lambda 事件。此时，CUR 数据通过 Amazon Athena 中的表供您查询。*
 
-    - Run [Amazon Athena][athena-query] queries directly on your CUR data.  
-*To run Athena queries on your data, first use the Athena console to check whether AWS is refreshing your data and then run your query on the Athena console.*
+    - 直接在 CUR 数据上运行 [Amazon Athena][athena-query] 查询。  
+*要对数据运行 Athena 查询，首先使用 Athena 控制台检查 AWS 是否正在刷新您的数据，然后在 Athena 控制台上运行查询。*
 
-3.	Deploy Cloud Intelligence dashboards.
-    - For manual deployment, refer the AWS Well-Architected **[Cost Optimization lab][cost-optimization-lab]**. 
-    - For automated deployment, refer the [GitHub repo][GitHub-repo].
+3. 部署 Cloud Intelligence 仪表板。
+    - 对于手动部署，请参考 AWS Well-Architected **[成本优化实验室][cost-optimization-lab]**。
+    - 对于自动部署，请参考 [GitHub 仓库][GitHub-repo]。
 
-Cloud Intelligence dashboards are great for Finance teams, Executives, and IT managers. However, one common question that we get from customers is how to gain insights into organizational wide cost of individual AWS Observability products like Amazon CloudWatch, AWS X-Ray, Amazon Managed Service for Prometheus, and Amazon Managed Grafana.  
+Cloud Intelligence 仪表板非常适合财务团队、高管和 IT 经理。然而，我们经常收到客户的一个问题是如何深入了解各个 AWS 可观测性产品（如 Amazon CloudWatch、AWS X-Ray、Amazon Managed Service for Prometheus 和 Amazon Managed Grafana）在整个组织范围内的成本。
 
-In the next section, you will dive-deep into cost and usage of each of those products. Companies of any size can adopt this proactive approach to cloud cost optimization strategy and improve business efficiency through cloud cost analytics and data-driven decisions, without any performance impact or operational overhead.
+在下一节中，您将深入探讨这些产品各自的成本和使用情况。任何规模的公司都可以采用这种主动的云成本优化策略，通过云成本分析和数据驱动的决策提高业务效率，而不会影响性能或增加运营开销。
+
 
 
 [cost-explorer]: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ce-what-is.html

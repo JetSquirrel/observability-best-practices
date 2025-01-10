@@ -1,34 +1,34 @@
-# Choosing a tracing agent
+# 选择追踪代理
 
-## Choose the right agent
+## 选择合适的代理
 
-AWS directly supports two toolsets for [trace](../signals/traces/) collection (plus our wealth of [observability partners](https://aws.amazon.com/products/management-and-governance/partners/): 
+AWS 直接支持两种用于[追踪](../signals/traces/)采集的工具（以及我们丰富的 [可观测性合作伙伴](https://aws.amazon.com/products/management-and-governance/partners/)）：
 
-* The [AWS Distro for OpenTelemetry](https://aws-otel.github.io/), commonly called ADOT
-* The X-Ray [SDKs](https://docs.aws.amazon.com/xray/latest/devguide/xray-instrumenting-your-app.html) and [daemon](https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon.html)
+* [AWS Distro for OpenTelemetry](https://aws-otel.github.io/)，通常称为 ADOT
+* X-Ray 的 [SDK](https://docs.aws.amazon.com/xray/latest/devguide/xray-instrumenting-your-app.html) 和 [守护进程](https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon.html)
 
-The selection of which tool or tools to use is a principal decision you must make as you evolve your observability solution. These tools are not mutually-exclusive, and you can mix them together as necessary. And there is a best practice for making this selection. However, first you should understand the current state of [OpenTelemetry (OTEL)](https://opentelemetry.io/).
+选择使用哪种工具或组合使用是你在完善可观测性方案时需要做的主要决策。这些工具并不互斥，你可以根据需要混合使用。而且，还存在一种最佳实践可帮助做出选择。但首先，你需要了解 [OpenTelemetry（OTEL）](https://opentelemetry.io/) 的现状。
 
-OTEL is the current industry standard specification for observabillity signalling, and contains definitions for each of the three core signal types: [metrics](../signals/metrics/), [traces](../signals/traces/), and [logs](../signals/logs). However, OTEL has not always existed and has evolved out of earlier specifications such as [OpenMetrics](https://openmetrics.io) and [OpenTracing](https://opentracing.io). Observability vendors began openly supporting OpenTelemetry Line Protocol (OTLP) in recent years. 
+OTEL 是当前业界标准的可观测性信号规范，包含对三种核心信号类型（[指标](../signals/metrics/)、[追踪](../signals/traces/)和[日志](../signals/logs/)）的定义。然而，OTEL 并非一直存在，而是从 [OpenMetrics](https://openmetrics.io) 和 [OpenTracing](https://opentracing.io) 等早期规范演进而来。近年来，各大可观测性供应商开始公开支持 OpenTelemetry Line Protocol (OTLP)。
 
-AWS X-Ray and CloudWatch pre-date the OTEL specification, as do other leading observability solutions. However, the AWS X-Ray service readily accepts OTEL traces using ADOT. ADOT has the integrations already built into it to emit telemetry into X-Ray directly, as well as to other ISV solutions.
+AWS X-Ray 和 CloudWatch 早于 OTEL 规范出现，与其他领先的可观测性解决方案一样。然而，AWS X-Ray 服务能够通过 ADOT 直接接收 OTEL 追踪。ADOT 内置的各种集成已可将遥测数据发送到 X-Ray，也可以将其发送到其他 ISV 解决方案。
 
-Any transaction tracing solution requires an agent and an integration into the underlying application in order to collect signals. And this, in turn, creates [technical debt](../faq/#what-is-technical-debt) in the form of libraries that must be tested, maintained, and upgraded, as well as possibly retooling if you choose to change your solution in the future.
+任何事务追踪方案都需要一个代理和对底层应用程序的集成来采集信号。这会带来[技术债务](../faq/#what-is-technical-debt)，包括需要对相关库进行测试、维护和升级，如果未来你想更换解决方案，可能还要重新调整工具。
 
-The SDKs included with X-Ray are part of a tightly integrated instrumentation solution offered by AWS. ADOT is part of a broader industry solution in which X-Ray is only one of many tracing solutions. You can implement end-to-end tracing in X-Ray using either approach, but it’s important to understand the differences in order to determine the most useful approach for you.
+X-Ray 提供的 SDK 是 AWS 提供的紧密集成的自动化方案；ADOT 则是更广泛行业解决方案的一部分，其中 X-Ray 只是众多追踪方案之一。你可以使用任何一种方式在 X-Ray 中实现端到端追踪，但了解二者的区别对于选择最适合你的方法非常重要。
 
 :::info
-	We recommend instrumenting your application with the AWS Distro for OpenTelemetry if you need the following:
+    如果你需要以下功能，我们建议使用 AWS Distro for OpenTelemetry 为应用程序植入监控：
 
-    * The ability to send traces to multiple different tracing backends without having to re-instrument your code. For example, of you wish to shift from using the X-Ray console to [Zipkin](https://zipkin.io), then only configuration of the collector would change, leaving your applicaiton code untouched.
+    * 在无需重新对代码进行检测的情况下，将追踪数据发送到多个不同的追踪后端。例如，如果你想从 X-Ray 控制台切换到 [Zipkin](https://zipkin.io)，只需配置 collector，不需要修改应用程序代码。
 
-    * Support for a large number of library instrumentations for each language, maintained by the OpenTelemetry community. 
+    * 由 OpenTelemetry 社区维护的针对各语言的大量库检测支持。
 :::
 
 :::info
-	We recommend choosing an X-Ray SDK for instrumenting your application if you need the following:
+    如果你需要以下功能，我们建议使用 X-Ray SDK 为应用程序植入监控：
 
-    * A tightly integrated single-vendor solution.
+    * 单一供应商的紧密集成解决方案。
 
-    * Integration with X-Ray centralized sampling rules, including the ability to configure sampling rules from the X-Ray console and automatically use them across multiple hosts, when using Node.js, Python, Ruby, or .NET
+    * 与 X-Ray 集中的采样规则集成，包含在使用 Node.js、Python、Ruby 或 .NET 时可从 X-Ray 控制台配置采样规则并自动在多个主机上应用它们的能力。
 :::

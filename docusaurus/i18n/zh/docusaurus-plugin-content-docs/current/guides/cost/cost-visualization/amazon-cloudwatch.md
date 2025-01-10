@@ -1,12 +1,12 @@
 # Amazon CloudWatch
 
-Amazon CloudWatch cost and usage visuals will allow you to gain insights into cost of individual AWS Accounts, AWS Regions, and all CloudWatch operations like GetMetricData, PutLogEvents, GetMetricStream, ListMetrics, MetricStorage, HourlyStorageMetering, and ListMetrics to name a few!  
-  
-To visualize and analyze the CloudWatch cost and usage data, you need to create a custom Athena view. An Amazon Athena [view][view] is a logical table and it creates a subset of columns from the original CUR table to simplify the querying of data.
+Amazon CloudWatch 的成本和使用情况可视化功能将帮助您深入了解各个 AWS 账户、AWS 区域以及所有 CloudWatch 操作（如 GetMetricData、PutLogEvents、GetMetricStream、ListMetrics、MetricStorage、HourlyStorageMetering 和 ListMetrics 等）的成本！
 
-1.	Before proceeding, make sure that you’ve created the CUR (step #1) and deployed the AWS Conformation Template (step #2) mentioned in the [Implementation overview][cid-implement].
+要可视化和分析 CloudWatch 的成本和使用数据，您需要创建一个自定义的 Athena 视图。Amazon Athena [视图][view] 是一个逻辑表，它从原始 CUR 表中创建列的子集，以简化数据查询。
 
-2.	Now, Create a new Amazon Athena [view][view] by using the following query. This query fetches cost and usage of Amazon CloudWatch across all the AWS Accounts in your Organization.
+1. 在继续之前，请确保您已创建 CUR（步骤 #1）并部署了 [实施概述][cid-implement] 中提到的 AWS 配置模板（步骤 #2）。
+
+2. 现在，使用以下查询创建一个新的 Amazon Athena [视图][view]。此查询获取您组织中所有 AWS 账户的 Amazon CloudWatch 的成本和使用情况。
 
         CREATE OR REPLACE VIEW "cloudwatch_cost" AS 
         SELECT
@@ -19,30 +19,30 @@ To visualize and analyze the CloudWatch cost and usage data, you need to create 
         , "sum"(line_item_usage_amount) "Usage"
         , "sum"(line_item_unblended_cost) cost
         FROM
-        database.tablename #replace database.tablename with your database and table name
+        database.tablename #将 database.tablename 替换为您的数据库和表名
         WHERE ("line_item_product_code" = 'AmazonCloudWatch')
         GROUP BY 1, 2, 3, 4, 5, 6
 
 
-### Create Amazon QuickSight dashboard
+### 创建 Amazon QuickSight 仪表板
 
-Now, let’s create a QuickSight dashboard to visualize the cost and usage of Amazon CloudWatch.  
+现在，让我们创建一个 QuickSight 仪表板来可视化 Amazon CloudWatch 的成本和使用情况。
 
-1.	On AWS Management Console, navigate to QuickSight service and then select your AWS Region from top right corner. Note that QuickSight Dataset should be in the same AWS Region as that of Amazon Athena table.
-2.	Make sure that QuickSight can [access][access] Amazon S3 and AWS Athena.
-3.	[Create QuickSight Dataset][create-dataset] by selecting the data-source as the Amazon Athena view that you created before. Use this procedure to [schedule refreshing][schedule-refresh] the Dataset on a daily basis.
-4.	Create QuickSight [Analysis][analysis].
-5.	Create QuickSight [Visuals][visuals] to meet your needs. 
-6.	[Format][format] the Visual to meet your needs. 
-7.	Now, you can [publish][publish] your dashboard from the Analysis.
-8.	You can send the dashboard in [report][report] format to individuals or groups, either once or on a schedule.
+1. 在 AWS 管理控制台上，导航到 QuickSight 服务，然后从右上角选择您的 AWS 区域。请注意，QuickSight 数据集应与 Amazon Athena 表位于同一 AWS 区域。
+2. 确保 QuickSight 可以 [访问][access] Amazon S3 和 AWS Athena。
+3. [创建 QuickSight 数据集][create-dataset]，选择数据源为您之前创建的 Amazon Athena 视图。使用此过程 [安排每日刷新][schedule-refresh] 数据集。
+4. 创建 QuickSight [分析][analysis]。
+5. 创建 QuickSight [可视化][visuals] 以满足您的需求。
+6. [格式化][format] 可视化以满足您的需求。
+7. 现在，您可以从分析中 [发布][publish] 仪表板。
+8. 您可以以 [报告][report] 格式将仪表板发送给个人或组，可以是一次性或按计划发送。
 
-The following **QuickSight dashboard** shows Amazon CloudWatch cost and usage across all AWS Accounts in your AWS Organizations along with CloudWatch operations like GetMetricData, PutLogEvents, GetMetricStream, ListMetrics, MetricStorage, HourlyStorageMetering, and ListMetrics to name a few.
+以下 **QuickSight 仪表板** 显示了您 AWS 组织中所有 AWS 账户的 Amazon CloudWatch 成本和使用情况，以及 CloudWatch 操作（如 GetMetricData、PutLogEvents、GetMetricStream、ListMetrics、MetricStorage、HourlyStorageMetering 和 ListMetrics 等）。
 
 ![cloudwatch-cost1](../../../images/cloudwatch-cost-1.PNG)
 ![cloudwatch-cost2](../../../images/cloudwatch-cost-2.PNG)
 
-With the preceding dashboard, you can now identify the cost of Amazon CloudWatch in the AWS accounts across your Organization. You can use other QuickSight [visual types][types] to build different dashboards to suit your requirements.
+通过上述仪表板，您现在可以识别组织中 AWS 账户的 Amazon CloudWatch 成本。您可以使用其他 QuickSight [可视化类型][types] 构建不同的仪表板以满足您的需求。
 
 
 [view]: https://athena-in-action.workshop.aws/30-basics/303-create-view.html
@@ -56,4 +56,3 @@ With the preceding dashboard, you can now identify the cost of Amazon CloudWatch
 [report]: https://docs.aws.amazon.com/quicksight/latest/user/sending-reports.html
 [types]: https://docs.aws.amazon.com/quicksight/latest/user/working-with-visual-types.html
 [cid-implement]: ../../../guides/cost/cost-visualization/cost.md#implementation
-

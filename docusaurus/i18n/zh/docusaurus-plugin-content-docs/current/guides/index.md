@@ -1,95 +1,94 @@
+# 最佳实践概览
 
-# Best practices overview
+可观测性是一个范围广泛、工具成熟的领域，但并非每种工具都适合每个方案。为帮助你更好地应对可观测性需求、配置和最终部署，我们总结了五大关键最佳实践，帮助你在制定可观测性策略时做出更明智的决策。
 
-Observability is a broad topic with a mature landscape of tools. Not every tool is right for every solution though! To help you navigate through your observability requirements, configuration, and final deployment, we have summarized five key best practices that will inform your decision making process on your Observability strategy.
+## 监控重要内容
 
-## Monitor what matters
+可观测性最重要的并不是服务器、网络、应用或用户，而是对*你*，你的业务、项目或用户而言最严重或最值得关注的那部分指标。
 
-The most important consideration with observability is not your servers, network, applications, or customers. It is what matters to *you*, your business, your project, or your users.
-
-Start first with what your success criteria are. For example, if you run an e-commerce application, your measures of success may be number of purchases made over the past hour. If you run a non-profit, then it may be donations vs. your target for the month. A payment processor may watch for transaction processing time, whereas universities would want to measure student attendance.
+首先要明确成功的标准。例如，如果你运营一个电商应用，那么衡量成功的指标也许是在过去一小时内的购买次数。如果你是一家非营利组织，则可能是每月的捐款数量相对于目标值的完成度。支付处理方或许需要关注交易处理时长，而大学则更关注学生出勤率。
 
 :::tip
-	Success metrics are different for everyone! We may use an e-commerce application as an example here, but your projects can have a very different measurement. Regardless, the advice remains the same: know what *good* looks like and measure for it.
+	每个人的成功指标都不同！我们可能会用电商应用作为示例，但你的项目可能有完全不同的衡量标准。无论如何，原则不变：明确*好*应该是什么样子，并进行测量。
 :::
 
-Regardless of your application, you must start with identifying your key metrics. Then *work backwards[^1]* from that to see what impacts it from an application or infrastructure perspective. For example, if high CPU on your web servers endangers customer satisfaction, and in-turn your sales, then monitoring CPU utilization is important!
+不管你的应用是什么，第一步都是确认关键指标。然后*逆向思考*[^1]，找到哪些应用或基础设施层面的因素会影响这些指标。例如，如果 Web 服务器的高 CPU 利用率会影响客户满意度，而客户满意度又会影响销售，那么就必须监控 CPU 利用率。
 
-#### Know your objectives, and measure them!
+#### 明确目标并对其进行测量
 
-Having identified your important top-level KPIs, your next job is to have an automated way to track and measure them. A critical success factor is doing so in the same system that watches your workload's operations. For our e-commerce workload example this may mean:
+确认关键业务指标之后，你需要有自动化方式来监测和测量这些指标。至关重要的一点是，要在同一个系统里汇总这些业务指标和你的工作负载运维信号。以我们的电商负载为例，可能需要：
 
-* Publishing sales data into a [*time series*](https://en.wikipedia.org/wiki/Time_series)
-* Tracking user registrations in this same system
-* Measure how long customers stay on web pages, and (again) push this data to a time series
+* 将销售数据导入[*时序数据*](https://en.wikipedia.org/wiki/Time_series)
+* 跟踪用户注册量，并保存在同一个系统中
+* 测量用户在网页上停留的时间并将数据再次写入时序
 
-Most customers have this data already, though not necessarily in the right places from an observability perspective. Sales data can typically be found in relational databases or business intelligence reporting systems, along with user registrations. And data from visit duration can be extracted from logs or from [Real User Monitoring](../tools/rum).
+大多数用户其实已经拥有这些数据，但未必通过可观测性的方式进行收集。销售数据常见于关系型数据库或商业智能报告系统，而用户停留时长可从日志或 [实时用户监测 (RUM)](../tools/rum) 中获取。
 
-Regardless of your metric data's original location or format, it must be maintained as a [*time series*](https://en.wikipedia.org/wiki/Time_series). Every key metric that matters most to you, whether it is business, personal, academic, or for any other purpose, must be in a time series format for you to correlate it with other observability data (sometimes known as *signals* or *telemetry*).
+无论原始位置或格式如何，都务必将这些关键指标维持成[*时序数据*](https://en.wikipedia.org/wiki/Time_series)。只有把最重要的业务、个人、学术或其他重要目的的数据都转换为时序格式，你才可将这些信息与其它可观测性数据（有时称为*信号*或*遥测*）进行关联。
 
 ![Example of a time series](../images/time_series.png)
-*Figure 1: example of a time series*
+*图 1：时序数据示例*
 
-## Context propagation and tool selection
+## 上下文传递与工具选择
 
-Tool selection is important and has a profound difference in how you operate and remediate problems. But worse than choosing a sub-optimal tool is tooling for all basic signal types. For example, collecting basic [logs](../signals/logs) from a workload, but missing transaction traces, leaves you with a gap. The result is an incohesive view of your entire application experiece. All modern approaches to observability depend on "connecting the dots" with application traces.
+在可观测性中，工具的选择非常重要，会直接影响运维和故障排查。但如果只采集部分基础信号类型，可能比选错工具更糟糕。比如，你只收集了工作负载的 [日志](../signals/logs)，却没有收集交易追踪，就会产生空白视图，导致无法全面了解整个应用体验。现代可观测性通常依赖*串联*应用追踪信息。
 
-A complete picture of your health and operations requires tools that collect [logs](../signals/logs), [metrics](../signals/metrics), and [traces](../signals/traces), and then performs correlation, analysis, [anomaly detection](../signals/anomalies), [dashboarding](../tools/dashboards), [alarms](../tools/alarms) and more.
+要全面了解健康状况和运维状态，需要收集 [日志](../signals/logs)、[指标](../signals/metrics) 和 [追踪](../signals/traces)，并进行关联、分析、[异常检测](../signals/anomalies)、[仪表盘](../tools/dashboards)、[告警](../tools/alarms) 等。
 
 :::info
-	Some observability solutions may not contain all of the above but are intended to augment, extend, or give added value to existing systems. In all cases, tool interoperability and extensibility is an important consideration when beginning an observability project.
+	有些可观测性解决方案可能并不包含所有上述功能，而是用于补充、扩展或赋能已有系统。在任何情况下，工具的可互操作性和可扩展性仍是开始可观测性项目时的重要考量因素。
 :::
 
-#### Every workload is different, but common tools make for a faster results
+#### 每个工作负载都不同，但通用工具让结果更快落地
 
-Using a common set of tools across every workload has add benefits such as reducing operational friction and training, and generally you should strive for a reduced number of tools or vendors. Doing so lets you rapidly deploy existing observability solutions to new environments or workloads, and with faster time-to-resolution when things go wrong.
+在各个工作负载中采用尽量统一的工具有额外好处，可以减少运维阻力和培训成本，一般应尽量减少使用过多工具或供应商。这样可让你更快地在新环境或新工作负载中部署现有可观测性方案，并在问题出现时更快进行故障排查。
 
-Your tools should be broad enough to observe every tier of your workload: basic infrastructure, applications, web sites, and everything in between. In places where a single tool is not possible, the best practice is to use those that have an open standard, are open source, and therefore have the broadest cross-platform integration possibilities.
+你的工具应足够通用，以覆盖工作负载的方方面面：基础设施、应用程序、网站以及其他各种功能层。当无法单一工具覆盖所有需求时，选择那些遵循开放标准、开源、跨平台集成度高的工具通常是最佳做法。
 
-#### Integrate with existing tools and processes
+#### 与现有工具和流程集成
 
-Don't reinvent the wheel! "Round" is a great shape already, and we should always be building collaborative and open systems, not data silos.
+不要重新发明轮子！「圆形」已经是一个很好的形状，而我们应该着力构建协作和开放的系统，而非数据孤岛。
 
-* Integrate with existing identity providers (e.g. Active Directory, SAML based IdPs).
-* If you have existing IT trouble tracking system (e.g. JIRA, ServiceNow) then integrate with it to quickly manage problems as they arise.
-* Use existing workload management and escalation tools (e.g. PagerDuty, OpsGenie) if you already have them!
-* Infrastructure as code tools such as Ansible, SaltStack, CloudFormation, TerraForm, and CDK are all great tools. Use them to manage your observability as well as everything else, and build your observability solution with the same infrastructure as code tools you already use today (see [include observability from day one](#include-observability-from-day-one)).
+* 与现有身份提供程序集成（如 Active Directory、基于 SAML 的 IdP）。
+* 如果已有 IT 问题跟踪系统（如 JIRA、ServiceNow），则将可观测性告警与之关联，快速管理出现的问题。
+* 如果已有工作负载管理和升级工具（如 PagerDuty、OpsGenie），就继续用它们！
+* 基础设施即代码工具（如 Ansible、SaltStack、CloudFormation、TerraForm、CDK）非常适合，你也可以通过这些工具一并管理可观测性，而不是构建孤立的解决方案（详见[从第一天就把可观测性包含在内](#include-observability-from-day-one)）。
 
-#### Use automation and machine learning
+#### 使用自动化和机器学习
 
-Computers are good at finding patterns, and at finding when data does *not* follow a pattern! If you have hundreds, thousands, or even millions of datapoints to monitor, then it would impossible to understand healthy thresholds for every single one of them. But many observability solutions have anomaly detection and machine learning capabilities that manage the undifferentiated heavy lifting of baselining your data.
+计算机非常适合发现模式，以及在数据不符合正常模式时发出提醒！如果你需要监控几百、几千甚至数百万个数据点，手动定义每个数据点的健康阈值几乎不可能。但很多可观测性工具已经提供异常检测和机器学习功能，能帮你处理这些繁琐的基线工作。
 
-We refer to this as "knowing what good looks like". If you have load-tested your workload thoroughly then you may know these healthy performance metrics already, but for a complex distributed application it can be unwieldy to create baselines for every metric. This is where anomaly detection, automation, and machine learning are invaluable.
+我们称之为「知道什么是健康状态」。如果你已经对工作负载进行了充分的负载测试，那么可能已经有了性能基线，但对于复杂的分布式应用，一一给每个指标创建基线仍然很难。这时异常检测、自动化和机器学习就至关重要。
 
-Leverage tools that manage the baselining and alerting of applications health on your behalf, thereby letting you focus on your goals, and [monitor what matters](#monitor-what-matters).
+使用能够自动管理应用健康基线并进行告警的工具，把更多时间留给你的业务目标，[监控真正重要的内容](#monitor-what-matters)。
 
-## Collect telemetry from all tiers of your workload
+## 从工作负载的所有层面收集遥测
 
-Your applications do not exist in isolation, and interactions with your network infrastructure, cloud providers, internet service providers, SasS partners, and other components both within and outside your control can all impact your outcomes. It is important that you have a holistic view of your entire workload.
+你的应用并非孤立存在，与网络基础设施、云供应商、ISP、SaaS 合作伙伴以及各种内部和外部组件都有交互，这些因素都可能影响你的最终结果。你需要对整体工作负载有一个整体性的视图。
 
-#### Focus on integrations
+#### 关注集成点
 
-If you have to pick one area to instrument, it will undoubtedly be your integrations between components. This is where the power of observability is most evident. As a rule, every time one component or service calls another, that call must have at least these data points measured:
+如果要优先选择一个地方进行监测，毫无疑问是组件之间的集成处。在这里，可观测性的重要价值最能凸显。通常，每次一个组件/服务调用另一个组件/服务时，都应该至少收集以下数据：
 
-1. The duration of the request and response
-1. The status of the response
+1. 请求与响应的耗时  
+2. 响应的状态  
 
-And to create the cohesive, holistic view that observability requires, a [single unique identier](../signals/traces) for the entire request chain must be included in the signals collected.
+要实现可观测性的全局视图，就必须在所收集的信号中有一个贯穿整个请求链的[*统一标识符*](../signals/traces)。
 
-#### Don't forget about the end-user experience
+#### 别忘了终端用户体验
 
-Having a complete view of your workload means understanding it at all tiers, including how your end users experience it. Measuring, quantifying, and understanding when your objectives are at risk from a poor user experience is just as important as watching for free disk space or CPU utilization - if not more important!
+要获取对工作负载的完整视图，需要覆盖所有层，包括最终用户的真实体验。用户体验的好坏往往也会直接威胁到你的目标，这一点可能比监控磁盘空间或 CPU 利用率更重要。
 
-If your workloads are ones that interact directly with the end user (such as any application served as a web site or mobile app) then [Real User Monitoring](../tools/rum) monitors not just the "last mile" of delivery to the user, but how they actually have experienced your application. Ultimately, none of the observability journey matters if your users are unable to actually use your services.
+如果你的负载面向直接用户（如任何通过网站或移动应用提供服务的应用），那么 [实时用户监测 (RUM)](../tools/rum) 不仅能监测到到达用户「最后一公里」的情况，还能帮助你了解用户实际上是如何使用你的应用。总之，如果用户无法真正使用你的服务，那么再完整的可观测性努力都毫无意义。
 
-## Data is power, but don't sweat the small stuff
+## 数据就是力量，但别纠结于细枝末节
 
-Depending on the size of your application, you may have a very large number of components to collect signals from. While doing so is important and empowering, there can be diminished returns from your efforts. This is why the best practice is to start by [monitoring what matters](#monitor-what-matters), use this as a way to map your important integrations and critical components, and focus on the right details.
+根据应用规模，你可能需要从海量的组件中收集信号。尽管这样做很重要且能带来价值，但也存在效益递减。最佳实践是在[关注真正重要内容](#monitor-what-matters)的基础上，梳理清楚重要的集成和关键组件，然后聚焦真正重要的细节。
 
-## Include observability from day one
+## 从第一天就把可观测性包含在内
 
-Like security, observability should not be an afterthought to your development or operations. The best practice is to put observability early in your planning, just like security, which creates a model for people to work with and reduces opaque corners of your application. Adding transaction tracing after major development work is done takes time, even with auto-instrumentation. The effort returns far greater returns! But doing so late in your development cycle may create some rework.
+和安全性类似，可观测性不应该被当作运维或开发的事后补救。最佳实践是在计划早期就纳入可观测性，这样能让系统更透明，就像纳入安全策略一样。比如，即便使用自动化埋点，后期才增加交易追踪也会花费时间。不过，你会发现这个投入非常值得，但如果在开发后期才进行，可会带来不必要的返工。
 
-Rather than bolting observability in your workload later one, use it to help *accelerate* your work. Proper [logging](../signals/logs), [metric](../signals/metrics), and [trace](../signals/traces) collection enables faster application development, fosters good practices, and lays the foundation for rapid problem solving going forward.
+与其在工作负载上线后再去加入可观测性，不如用它来加速工作。通过对 [日志](../signals/logs)、[指标](../signals/metrics) 和 [追踪](../signals/traces) 的合理收集，可加快应用开发进程，提升工程实践，同时为今后的快速排障打下坚实基础。
 
-[^1]: Amazon uses the *working backwards* process extensively as a way to obsession over our customers and their outcomes, and we highly recommend that anyone working on observability solutions work backwards from their own objectives in the same way. You can read more about *working backwards* on [Werner Vogels's blog](https://www.allthingsdistributed.com/2006/11/working_backwards.html).
+[^1]: Amazon 广泛运用*逆向思考*法来持续关注客户及客户的预期结果，我们也建议任何可观测性实践者对自身目标应用相同的逆向思考方式。关于*逆向思考*，可在 [Werner Vogels 的博客](https://www.allthingsdistributed.com/2006/11/working_backwards.html) 了解更多。

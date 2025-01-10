@@ -1,12 +1,12 @@
 # AWS X-Ray
 
-AWS X-Ray cost and usage visuals will allow you to gain insights into cost of individual AWS Accounts, AWS Regions, and TracesStored!  
+AWS X-Ray 成本和使用情况可视化将让您深入了解各个 AWS 账户、AWS 区域和存储的追踪数据的成本！
 
-To visualize and analyze the cost and usage data, you need to create a custom Athena view.
+要可视化和分析成本和使用数据，您需要创建一个自定义的 Athena 视图。
 
-1.	Before proceeding, make sure that you’ve created the CUR (step #1) and deployed the AWS Conformation Template (step #2) mentioned in the [Implementation overview][cid-implement].
+1. 在继续之前，请确保您已经创建了 CUR（步骤 #1）并部署了在[实施概述][cid-implement]中提到的 AWS 确认模板（步骤 #2）。
 
-2.	Now, Create a new Amazon Athena [view][view] by using the following query. This query fetches cost and usage of Amazon Managed Grafana across all the AWS Accounts in your Organization.
+2. 现在，使用以下查询创建一个新的 Amazon Athena [视图][view]。此查询获取组织中所有 AWS 账户的 Amazon Managed Grafana 的成本和使用情况。
 
         CREATE OR REPLACE VIEW "xray_cost" AS 
         SELECT
@@ -18,11 +18,11 @@ To visualize and analyze the cost and usage data, you need to create a custom At
         , "sum"(line_item_usage_amount) "Usage"
         , "sum"(line_item_net_unblended_cost) cost
         FROM
-        database.tablename #replace database.tablename with your database and table name 
+        database.tablename #将 database.tablename 替换为您的数据库和表名
         WHERE ("line_item_product_code" = 'AWSXRay')
         GROUP BY 1, 2, 3, 4, 5
 
-Using Athena as a data source, you can build dashboards in either Amazon Managed Grafana or Amazon QuickSight to suit your business requirements. As well, you could directly run [SQL queries][sql-query] against the Athena view that you created.
+使用 Athena 作为数据源，您可以在 Amazon Managed Grafana 或 Amazon QuickSight 中构建仪表板以满足您的业务需求。同样，您也可以直接对您创建的 Athena 视图运行 [SQL 查询][sql-query]。
 
 [view]: https://athena-in-action.workshop.aws/30-basics/303-create-view.html
 [sql-query]: https://docs.aws.amazon.com/athena/latest/ug/querying-athena-tables.html

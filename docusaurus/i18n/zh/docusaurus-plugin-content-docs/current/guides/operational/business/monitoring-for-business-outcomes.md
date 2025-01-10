@@ -1,92 +1,92 @@
-# Why should you do observability?
+# 为什么要进行可观测性？
 
-See [Developing an Observability Strategy](https://www.youtube.com/watch?v=Ub3ATriFapQ) on YouTube
+观看 [制定可观测性策略](https://www.youtube.com/watch?v=Ub3ATriFapQ) 的YouTube视频
 
-## What really matters?
+## 什么才是真正重要的？
 
-Everything that you do at work should align to your organization's mission. All of us that are employed work to fulfill our organization's mission and towards its vision. At Amazon, our mission states that:
+你在工作中所做的一切都应该与组织的使命保持一致。我们所有受雇于公司的人都是为了实现组织的使命和愿景而努力。在亚马逊，我们的使命是：
 
-> Amazon strives to be Earth’s most customer-centric company, Earth’s best employer, and Earth’s safest place to work.
+> 亚马逊致力于成为地球上最以客户为中心的公司、地球上最好的雇主以及地球上最安全的工作场所。
 
-— [About Amazon](https://www.aboutamazon.com/about-us)
+—— [关于亚马逊](https://www.aboutamazon.com/about-us)
 
-In IT, every project, deployment, security measure or optimization should work towards a business outcome. It seems obvious, but you should not do anything that does not add value to the business. As ITIL puts it:
+在IT领域，每个项目、部署、安全措施或优化都应该为业务成果服务。这似乎是显而易见的，但你不应该做任何不能为业务增加价值的事情。正如ITIL所说：
 
-> Every change should deliver business value.
+> 每一个变更都应该交付业务价值。
 
-— ITIL Service Transition, AXELOS, 2011, page 44.  
-— See [Change Management in the Cloud AWS Whitepaper](https://docs.aws.amazon.com/whitepapers/latest/change-management-in-the-cloud/change-management-in-the-cloud.html)
+—— ITIL服务转换，AXELOS，2011年，第44页。  
+—— 参见 [云中的变更管理 AWS白皮书](https://docs.aws.amazon.com/whitepapers/latest/change-management-in-the-cloud/change-management-in-the-cloud.html)
 
-Mission and business value are important because they should inform everything that you do. There are many benefits to observability, these include:
+使命和业务价值之所以重要，是因为它们应该指导你所做的一切。可观测性有许多好处，包括：
 
-- Better availability
-- More reliability
-- Understanding of application health and performance
-- Better collaboration
-- Proactive detection of issues
-- Increase customer satisfaction
-- Reduce time to market
-- Reduce operational costs
-- Automation
+- 更好的可用性
+- 更高的可靠性
+- 对应用健康和性能的理解
+- 更好的协作
+- 主动检测问题
+- 提高客户满意度
+- 缩短上市时间
+- 降低运营成本
+- 自动化
 
-All of these benefits have one thing in common, they all deliver business value, either directly to the customer or indrectly to the organization. When thinking about observability, everything should come back to thinking about whether or not your application is delivering business value.
+所有这些好处都有一个共同点，它们都交付业务价值，无论是直接对客户还是间接对组织。在考虑可观测性时，一切都应该回到思考你的应用是否在交付业务价值。
 
-This means that observability should be measuring things that contribute towards delivering business value, focusing on business outcomes and when they are at risk: you should think about what your customers want and what they need.
+这意味着可观测性应该测量那些有助于交付业务价值的内容，专注于业务成果以及它们何时面临风险：你应该考虑你的客户想要什么以及他们需要什么。
 
-## Where do I start?
+## 我从哪里开始？
 
-Now that you know what matters, you need to think about what you need to measure. At Amazon, we start with the customer and work backwards from their needs:
+既然你已经知道什么才是重要的，接下来你需要考虑你需要测量什么。在亚马逊，我们从客户出发，从他们的需求倒推：
 
-> We are internally driven to improve our services, adding benefits and features, before we have to. We lower prices and increase value for customers before we have to. We invent before we have to.
+> 我们内部驱动自己去改进服务，增加好处和功能，在我们不得不这样做之前。我们在不得不降价之前降低价格并为客户增加价值。我们在不得不发明之前进行发明。
 
-— Jeff Bezos, [2012 Shareholder Letter](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2012-Shareholder-Letter.pdf)
+—— 杰夫·贝索斯，[2012年股东信](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2012-Shareholder-Letter.pdf)
 
-Let's take a simple example, using an e-commerce site. First, think about what you want as a customer when you are buying products online, it may not be the same for everyone, but you probably care about things like:
+让我们举一个简单的例子，使用一个电子商务网站。首先，想想当你在线购买产品时，作为客户你关心什么，可能每个人关心的不一样，但你可能会关心以下内容：
 
-- Delivery
-- Price
-- Security
-- Page Speed
-- Search (can you find the product you are looking for?)
+- 交付
+- 价格
+- 安全性
+- 页面速度
+- 搜索（你能找到你想要的产品吗？）
 
-Once you know what your customers care about, you can start to measure them and how they affect your business outcomes. Page speed directly impacts your conversion rate and search engine ranking. A 2017 study showed that more than half (53%) of mobile users abandon a page if it takes more than 3 seconds to load. There are of course, many studies that show the importance of page speed, and it is an obvious metric to measure, but you need to measure it and take action because it has a measureable impact on conversion and you can use that data to make improvements.
+一旦你知道你的客户关心什么，你就可以开始测量它们以及它们如何影响你的业务成果。页面速度直接影响你的转化率和搜索引擎排名。2017年的一项研究表明，超过一半（53%）的移动用户会在页面加载时间超过3秒时放弃访问。当然，有许多研究表明页面速度的重要性，这是一个显而易见的指标，但你需要测量它并采取行动，因为它对转化率有可测量的影响，你可以利用这些数据来改进。
 
-## Working backwards
+## 从客户需求倒推
 
-You cannot be expected to know everything that you customers care about. If you are reading this, you are probably in a technical role. You need to talk to the stakeholders in your organisation, this isn't always easy, but it is vital to ensuring that you are measuring what's important. 
+你不能指望知道客户关心的一切。如果你正在阅读这篇文章，你可能处于技术岗位。你需要与组织中的利益相关者交谈，这并不总是容易的，但对于确保你测量的是重要的内容至关重要。
 
-Let's continue with the e-commerce example. This time, consider search: it may be obvious that customers need to be able to search for a product in order to buy it, but did you know that according to a [Forrester Research report](https://www.forrester.com/report/MustHave+eCommerce+Features/-/E-RES89561), 43% of visitors navigate immediately to the search box and searches are 2-3 times more likely to convert compared to non-searchers. Search is really important, it has to work well and you need to monitor it - maybe you discover that particular searches are yeilding no results and that you need to move from naive pattern matching to natural language processing. This is an example of monitoring for a business outcome and then acting to improve the customer experience.
+让我们继续以电子商务为例。这次考虑搜索：客户需要能够搜索产品才能购买，这一点可能是显而易见的，但你是否知道，根据[Forrester Research报告](https://www.forrester.com/report/MustHave+eCommerce+Features/-/E-RES89561)，43%的访问者会立即导航到搜索框，而搜索者的转化率比非搜索者高2-3倍。搜索非常重要，它必须正常工作，你需要监控它——也许你会发现某些搜索没有结果，你需要从简单的模式匹配转向自然语言处理。这是一个监控业务成果并采取行动改善客户体验的例子。
 
-At Amazon:
+在亚马逊：
 
-> We strive to deeply understand customers and work backwards from their pain points to rapidly develop innovations that create meaningful solutions in their lives.
+> 我们努力深入了解客户，并从他们的痛点出发，快速开发创新，为他们的生活创造有意义的解决方案。
 
-— Daniel Slater - Worldwide Lead, Culture of Innovation, AWS in [Elements of Amazon’s Day 1 Culture](https://aws.amazon.com/executive-insights/content/how-amazon-defines-and-operationalizes-a-day-1-culture/)
+—— Daniel Slater - AWS全球创新文化负责人，[亚马逊“第一天”文化的要素](https://aws.amazon.com/executive-insights/content/how-amazon-defines-and-operationalizes-a-day-1-culture/)
 
-We start with the customer and work backwards from their needs. This isn't the only approach to success in business, but it is a good approach to observability. Work with stakeholders to understand what's important to your customers and then work backwards from there.
+我们从客户出发，从他们的需求倒推。这不是商业成功的唯一方法，但它是可观测性的一个好方法。与利益相关者合作，了解对客户重要的内容，然后从那里倒推。
 
-As an added benefit, if you collect metrics that are important to your customers and stakeholders, you can visualize these in near real-time dashboards and avoid having to create reports or answer questions such as "how long is it taking to load the landing page?" or "how much is it costing to run the website?" - stakeholders and executives should be able to self serve this information.
+作为一个额外的好处，如果你收集对客户和利益相关者重要的指标，你可以将这些指标可视化在近实时的仪表板中，避免创建报告或回答诸如“加载登陆页面需要多长时间？”或“运行网站的成本是多少？”等问题——利益相关者和高管应该能够自助获取这些信息。
 
-These are the kind of high level metrics that **really matter** for your application and they are also almost always the best indicator that there is an issue. For example: an alert indicating that there are fewer orders than you would normally expect in a given time period tells you that there is probably an issue that is impacting customers; an alert indicating that a volume on a server is nearly full or that you have a high number of 5xx errors for a particular service may be something that requires fixing, but you still have to understand customer impact and then prioritize accordingly - this can take time.
+这些是**真正重要**的高级指标，它们几乎总是表明存在问题的最佳指标。例如：一个警报表明在给定时间段内的订单数量比正常情况下少，这告诉你可能存在影响客户的问题；一个警报表明服务器上的存储空间几乎已满或某个服务有大量5xx错误，可能需要修复，但你仍然需要了解客户影响，然后优先处理——这可能需要时间。
 
-Issues that impact customers are easy to identify when you are measuring these high level business metrics. These metrics are the **what** is happening. Other metrics and other forms of observability such as tracing and logs are the **why** is this happening, which will lead you to what you can do to fix it or improve it.
+当你测量这些高级业务指标时，影响客户的问题很容易识别。这些指标是**发生了什么**。其他指标和其他形式的可观测性（如跟踪和日志）是**为什么会发生**，这将引导你找到修复或改进的方法。
 
-## What to observe
+## 观察什么
 
-Now you have an idea of what matters to your customers, you can identify Key Performance Indicators (KPIs). These are your high level metrics that will tell you if business outcomes are at risk. You also need to gather information from many different sources that may impact those KPIs, this is where you need to start thinking about metrics that could impact those KPIs. As was discussed earlier, the number of 5xx errors, does not indicate impact, but it could have an effect on your KPIs. Work your way backwards from what will impact business outcomes to things that may impact business outcomes. 
+现在你已经了解了客户关心什么，你可以确定关键绩效指标（KPIs）。这些是你的高级指标，它们会告诉你业务成果是否面临风险。你还需要从许多不同的来源收集可能影响这些KPI的信息，这是你需要开始思考可能影响这些KPI的指标的地方。正如前面讨论的那样，5xx错误的数量并不表示影响，但它可能会影响你的KPI。从影响业务成果的内容倒推到可能影响业务成果的内容。
 
-Once you know what you need to collect, you need to identify the sources of information that will provide you with the metrics you can use to measure KPIs and related metrics that may impact those KPIs. This is the basis of what you observe.
+一旦你知道你需要收集什么，你需要确定信息来源，这些来源将为你提供用于测量KPI的指标以及可能影响这些KPI的相关指标。这是你观察的基础。
 
-This data is likely to come from Metrics, Logs and Traces. Once you have this data, you can use it to alert when outcomes are at risk.
+这些数据可能来自指标、日志和跟踪。一旦你有了这些数据，你就可以在业务成果面临风险时发出警报。
 
-You can then evaluate the impact and attempt to rectify the issue. Almost always, this data will tell you that there’s a problem, before an isolated technical metric (such as cpu or memory) does.
+然后你可以评估影响并尝试解决问题。几乎总是，这些数据会在孤立的技术指标（如CPU或内存）之前告诉你存在问题。
 
-You can use observability reactively to fix an issue impacting business outcomes or you can use the data proactively to do something like improve your customer's search experience.
+你可以被动地使用可观测性来修复影响业务成果的问题，或者你可以主动使用数据来改善客户的搜索体验。
 
-## Conclusion
+## 结论
 
-Whilst CPU, RAM, Disk Space and other technical metrics are important for scaling, performance, capacity and cost – they don’t really tell you how your application is doing and don’t give any insight in to customer experience.
+虽然CPU、内存、磁盘空间和其他技术指标对于扩展、性能、容量和成本很重要——但它们并不能真正告诉你你的应用表现如何，也不能提供任何关于客户体验的洞察。
 
-Your customers are what’s important and it’s their experience that you should be monitoring.
+你的客户才是重要的，你应该监控的是他们的体验。
 
-That’s why you should work backwards from your customers’ requirements, working with your stakeholders and establish KPIs and metrics that matter.
+这就是为什么你应该从客户需求出发，与利益相关者合作，建立真正重要的KPI和指标。
